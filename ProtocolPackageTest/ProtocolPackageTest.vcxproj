@@ -161,6 +161,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="TestAppend.cpp" />
+    <ClCompile Include="TestRetrieve.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ProtocolPackage\ProtocolPackage.vcxproj">

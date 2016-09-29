@@ -1193,44 +1193,71 @@ int CSTXProtocol::GetNextString(char *lpBuffer, int cchBufferLen )
 {
 	if(IsValidDataType(STXPROTOCOL_DATA_TYPE_UNICODE))
 	{
-		return GetNextUnicodeString(lpBuffer, cchBufferLen);
-	}
+		unsigned char nLengthBytes = 0;
+		long nStringLen = DecodeCompactInteger(GetDataContentBasePtr() + m_nCurentReadOffset + 1, &nLengthBytes);
+		if (nStringLen == -1)
+		{
+			return -1;
+		}
 
-	const unsigned char nType = STXPROTOCOL_DATA_TYPE_UTF8;
-	if(!IsValidDataType(nType))
+		if (m_nCurentWriteOffset - m_nCurentReadOffset < nStringLen + nLengthBytes + 1)
+		{
+			//AssertBreak(_T("GetNextString() : Not enough string data available."));
+			return -1;
+		}
+
+		const wchar_t* pStrBase = (wchar_t*)(GetDataContentBasePtr() + m_nCurentReadOffset + 1 + nLengthBytes);
+
+		std::wstring_convert<std::codecvt_utf8<wchar_t>> conv;
+		std::string str = conv.to_bytes(pStrBase, pStrBase + nStringLen / sizeof(wchar_t));
+
+		if (cchBufferLen < str.size() + 1)
+		{
+			return -1;
+		}
+
+		memcpy(lpBuffer, str.c_str(), str.size());
+		lpBuffer[str.size()] = 0;
+
+		SkipTypeIndicator();
+		m_nCurentReadOffset += nLengthBytes;
+		m_nCurentReadOffset += nStringLen;
+
+		return str.size();
+	}
+	else if (IsValidDataType(STXPROTOCOL_DATA_TYPE_UTF8))
 	{
-		//AssertBreak(_T("GetNextString() : Next field is not UTF8/Unicode type."));
-		return -1;
+		unsigned char nLengthBytes = 0;
+		long nStringLen = DecodeCompactInteger(GetDataContentBasePtr() + m_nCurentReadOffset + 1, &nLengthBytes);
+		if (nStringLen == -1)
+		{
+			return -1;
+		}
+
+		if (m_nCurentWriteOffset - m_nCurentReadOffset < nStringLen + nLengthBytes + 1)
+		{
+			//AssertBreak(_T("GetNextString() : Not enough string data available."));
+			return -1;
+		}
+
+		const char* pStrBase = GetDataContentBasePtr() + m_nCurentReadOffset + 1 + nLengthBytes;
+
+		if (cchBufferLen < nStringLen + 1)
+		{
+			return -1;
+		}
+
+		memcpy(lpBuffer, pStrBase, nStringLen);
+		lpBuffer[nStringLen] = 0;
+
+		SkipTypeIndicator();
+		m_nCurentReadOffset += nLengthBytes;
+		m_nCurentReadOffset += nStringLen;
+
+		return nStringLen;
 	}
 
-	unsigned char nLengthBytes = 0;
-	long nStringLen = DecodeCompactInteger(GetDataContentBasePtr() + m_nCurentReadOffset + 1, &nLengthBytes);
-	if(nStringLen == -1)
-	{
-		return -1;
-	}
-
-	if(m_nCurentWriteOffset - m_nCurentReadOffset < nStringLen + nLengthBytes + 1)
-	{
-		//AssertBreak(_T("GetNextString() : Not enough string data available."));
-		return -1;
-	}
-
-	const char* pStrBase = GetDataContentBasePtr() + m_nCurentReadOffset + 1 + nLengthBytes;
-
-	if (cchBufferLen < nStringLen + 1)
-	{
-		return -1;
-	}
-
-	memcpy(lpBuffer, pStrBase, nStringLen);
-	lpBuffer[nStringLen] = 0;
-
-	SkipTypeIndicator();
-	m_nCurentReadOffset += nLengthBytes;
-	m_nCurentReadOffset += nStringLen;
-
-	return nStringLen;
+	return 0;
 }
 
 
@@ -1238,44 +1265,70 @@ int CSTXProtocol::GetNextString(wchar_t *lpBuffer, int cchBufferLen)
 {
 	if (IsValidDataType(STXPROTOCOL_DATA_TYPE_UTF8))
 	{
-		return GetNextUnicodeString(lpBuffer, cchBufferLen);
-	}
+		unsigned char nLengthBytes = 0;
+		long nStringLen = DecodeCompactInteger(GetDataContentBasePtr() + m_nCurentReadOffset + 1, &nLengthBytes);
+		if (nStringLen == -1)
+		{
+			return -1;
+		}
 
-	const unsigned char nType = STXPROTOCOL_DATA_TYPE_UNICODE;
-	if (!IsValidDataType(nType))
+		if (m_nCurentWriteOffset - m_nCurentReadOffset < nStringLen + nLengthBytes + 1)
+		{
+			//AssertBreak(_T("GetNextString() : Not enough string data available."));
+			return -1;
+		}
+
+		const char* pStrBase = GetDataContentBasePtr() + m_nCurentReadOffset + 1 + nLengthBytes;
+
+		std::wstring_convert<std::codecvt_utf8<wchar_t>> conv;
+		std::wstring str = conv.from_bytes(pStrBase, pStrBase + nStringLen);
+
+		if (cchBufferLen < str.size() + 1)
+		{
+			return -1;
+		}
+
+		memcpy(lpBuffer, str.c_str(), str.size() * sizeof(wchar_t));
+		lpBuffer[str.size()] = 0;
+
+		SkipTypeIndicator();
+		m_nCurentReadOffset += nLengthBytes;
+		m_nCurentReadOffset += nStringLen;
+
+		return str.size();
+	}
+	else if (IsValidDataType(STXPROTOCOL_DATA_TYPE_UNICODE))
 	{
-		//AssertBreak(_T("GetNextString() : Next field is not UTF8/Unicode type."));
-		return -1;
+		unsigned char nLengthBytes = 0;
+		long nStringLen = DecodeCompactInteger(GetDataContentBasePtr() + m_nCurentReadOffset + 1, &nLengthBytes);
+		if (nStringLen == -1)
+		{
+			return -1;
+		}
+
+		if (m_nCurentWriteOffset - m_nCurentReadOffset < nStringLen + nLengthBytes + 1)
+		{
+			//AssertBreak(_T("GetNextString() : Not enough string data available."));
+			return -1;
+		}
+
+		const char* pStrBase = GetDataContentBasePtr() + m_nCurentReadOffset + 1 + nLengthBytes;
+
+		if (cchBufferLen < nStringLen + 1)
+		{
+			return -1;
+		}
+
+		memcpy(lpBuffer, pStrBase, nStringLen);
+		lpBuffer[nStringLen] = 0;
+
+		SkipTypeIndicator();
+		m_nCurentReadOffset += nLengthBytes;
+		m_nCurentReadOffset += nStringLen;
+
+		return nStringLen;
 	}
-
-	unsigned char nLengthBytes = 0;
-	long nStringLen = DecodeCompactInteger(GetDataContentBasePtr() + m_nCurentReadOffset + 1, &nLengthBytes);
-	if (nStringLen == -1)
-	{
-		return -1;
-	}
-
-	if (m_nCurentWriteOffset - m_nCurentReadOffset < nStringLen + nLengthBytes + 1)
-	{
-		//AssertBreak(_T("GetNextString() : Not enough string data available."));
-		return -1;
-	}
-
-	const char* pStrBase = GetDataContentBasePtr() + m_nCurentReadOffset + 1 + nLengthBytes;
-
-	if (cchBufferLen < nStringLen + 1)
-	{
-		return -1;
-	}
-
-	memcpy(lpBuffer, pStrBase, nStringLen);
-	lpBuffer[nStringLen] = 0;
-
-	SkipTypeIndicator();
-	m_nCurentReadOffset += nLengthBytes;
-	m_nCurentReadOffset += nStringLen;
-
-	return nStringLen;
+	return 0;
 }
 
 std::string CSTXProtocol::GetNextString()
@@ -1508,6 +1561,8 @@ int CSTXProtocol::GetNextRawData( void *pBuffer, int cbBufferSize )
 
 	const char* pFieldDataBase = GetDataContentBasePtr() + m_nCurentReadOffset + 1 + nLengthBytes;
 	memcpy(pBuffer, pFieldDataBase, nFieldLen);
+
+	SkipNextField();
 
 	return nFieldLen;
 }
@@ -1745,6 +1800,8 @@ int CSTXProtocol::GetNextUnicodeString(char *lpBuffer, int cchBufferLen )
 	memcpy(lpBuffer, str.c_str(), convertedLen);
 	lpBuffer[convertedLen] = 0;
 
+	SkipNextField();
+
 	return convertedLen;
 }
 
@@ -1779,6 +1836,8 @@ int CSTXProtocol::GetNextUnicodeString(wchar_t *lpBuffer, int cchBufferLen)
 
 	memcpy(lpBuffer, pStrBase, cchStringLen * sizeof(wchar_t));
 	lpBuffer[cchStringLen] = 0;
+
+	SkipNextField();
 
 	return cchStringLen;
 }
@@ -2056,7 +2115,7 @@ int CSTXProtocol::DecodeUnicodeString(void *pDataPtr, wchar_t *lpBuffer, int cch
 		return -1;
 	}
 
-	memcpy(lpBuffer, pStrBase, cchStringLen);
+	memcpy(lpBuffer, pStrBase, nStringLen);
 	lpBuffer[cchStringLen] = 0;
 
 	return cchStringLen;

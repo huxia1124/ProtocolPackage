@@ -7,7 +7,7 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace ProtocolPackageTest
 {		
-	TEST_CLASS(UnitTestForSTXProtocol)
+	TEST_CLASS(UnitTest_Append)
 	{
 		CSTXProtocol proPrimitives;
 		CSTXProtocol proStrings;
@@ -97,7 +97,7 @@ namespace ProtocolPackageTest
 			long lengthPrefixWhole = CSTXProtocol::GetCompactIntegerLen(expectLength);
 
 			//Add string 'Hello World', Type + lenthPrefix + content[?]
-			char str1[] = "Maybe you glance through a ground-floor window and your gaze lingers a little longer than it should because the twinkle of a chandelier catches your eye. Or maybe the crisp lines of a doorman¡¯s uniform make you pause or maybe it¡¯s the gentle hand he proffers to help an elderly resident cross the threshold.";
+			const char str1[] = "Maybe you glance through a ground-floor window and your gaze lingers a little longer than it should because the twinkle of a chandelier catches your eye. Or maybe the crisp lines of a doorman¡¯s uniform make you pause or maybe it¡¯s the gentle hand he proffers to help an elderly resident cross the threshold.";
 			long strLen1 = strlen(str1);
 			long lengthPrefixLen1 = CSTXProtocol::GetCompactIntegerLen(strLen1);
 			proStrings.AppendData(str1);
