@@ -56,6 +56,10 @@ namespace ProtocolPackageTest
 			proStrings.AppendUnicodeString(L"World");			//Store as Unicode(wchar_t)
 			proStrings.AppendUnicodeString(L"Try Another One 123");		//Store as Unicode(wchar_t)
 			proStrings.AppendUnicodeString(L"!!@@##$$%%");		//Store as Unicode(wchar_t)
+			proStrings.AppendData("Another String UTF8");		//Store as UTF8
+			proStrings.AppendUnicodeString("Unicode Again");		//Store as Unicode(wchar_t)
+			proStrings.AppendData("Test1");		//Store as UTF8
+			proStrings.AppendData("Test2");		//Store as UTF8
 
 			Assert::AreEqual(std::string("Hello World"), proStrings.GetNextString());
 			Assert::AreEqual(std::string("Hello Kitty"), proStrings.GetNextString());
@@ -82,6 +86,17 @@ namespace ProtocolPackageTest
 			Assert::AreEqual(std::string("Try Another One 123"), std::string(buf2));
 
 			Assert::AreEqual(std::string("!!@@##$$%%"), proStrings.GetNextString());
+
+			Assert::AreEqual(std::wstring(L"Another String UTF8"), proStrings.GetNextUnicodeString());
+			Assert::AreEqual(std::wstring(L"Unicode Again"), proStrings.GetNextUnicodeString());
+
+			CSTXProtocolString s1;
+			proStrings.GetNextString(&s1);
+			Assert::AreEqual(std::string("Test1"), std::string((const char*)s1));
+
+			CSTXProtocolString s2;
+			proStrings.GetNextString(&s2);
+			Assert::AreEqual(std::wstring(L"Test2"), std::wstring((const wchar_t*)s2));
 
 		}
 

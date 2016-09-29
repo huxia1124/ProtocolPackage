@@ -1054,7 +1054,7 @@ unsigned char CSTXProtocol::GetNextByte()
 	const unsigned char nType = STXPROTOCOL_DATA_TYPE_BYTE;
 	if(!IsValidDataType(nType))
 	{
-		//AssertBreak(_T("GetNextByte() : Next field is not Byte type."));
+		throw std::runtime_error("GetNextByte() : Next field is not Byte type.");
 		return 0;
 	}
 
@@ -1071,7 +1071,7 @@ uint16_t CSTXProtocol::GetNextWORD()
 	const unsigned char nType = STXPROTOCOL_DATA_TYPE_WORD;
 	if(!IsValidDataType(nType))
 	{
-		//AssertBreak(_T("GetNextWORD() : Next field is not Word type."));
+		throw std::runtime_error("GetNextWORD() : Next field is not Word type.");
 		return 0;
 	}
 
@@ -1088,7 +1088,7 @@ uint32_t CSTXProtocol::GetNextDWORD()
 	const unsigned char nType = STXPROTOCOL_DATA_TYPE_DWORD;
 	if(!IsValidDataType(nType))
 	{
-		//AssertBreak(_T("GetNextDWORD() : Next field is not DWord type."));
+		throw std::runtime_error("GetNextDWORD() : Next field is not DWord type.");
 		return 0;
 	}
 
@@ -1105,7 +1105,7 @@ int64_t CSTXProtocol::GetNextI64()
 	const unsigned char nType = STXPROTOCOL_DATA_TYPE_I64;
 	if(!IsValidDataType(nType))
 	{
-		//AssertBreak(_T("GetNextI64() : Next field is not I64 type."));
+		throw std::runtime_error("GetNextI64() : Next field is not I64 type.");
 		return 0;
 	}
 
@@ -1122,7 +1122,7 @@ float CSTXProtocol::GetNextFloat()
 	const unsigned char nType = STXPROTOCOL_DATA_TYPE_FLOAT;
 	if (!IsValidDataType(nType))
 	{
-		//AssertBreak(_T("GetNextFloat() : Next field is not Float type."));
+		throw std::runtime_error("GetNextFloat() : Next field is not Float type.");
 		return 0;
 	}
 
@@ -1139,7 +1139,7 @@ double CSTXProtocol::GetNextDouble()
 	const unsigned char nType = STXPROTOCOL_DATA_TYPE_DOUBLE;
 	if (!IsValidDataType(nType))
 	{
-		//AssertBreak(_T("GetNextDouble() : Next field is not Double type."));
+		throw std::runtime_error("GetNextDouble() : Next field is not Double type.");
 		return 0;
 	}
 
@@ -1156,7 +1156,7 @@ GUID CSTXProtocol::GetNextGUID()
 	const unsigned char nType = STXPROTOCOL_DATA_TYPE_GUID;
 	if(!IsValidDataType(nType))
 	{
-		//AssertBreak(_T("GetNextGUID() : Next field is not GUID type."));
+		throw std::runtime_error("GetNextGUID() : Next field is not GUID type.");
 		return GUID();
 	}
 
@@ -1173,7 +1173,7 @@ CSTXProtocol* CSTXProtocol::GetNextObject()
 	const unsigned char nType = STXPROTOCOL_DATA_TYPE_OBJECT;
 	if(!IsValidDataType(nType))
 	{
-		//AssertBreak(_T("GetNextObject() : Next field is not Object type."));
+		throw std::runtime_error("GetNextObject() : Next field is not Object type.");
 		return nullptr;
 	}
 
@@ -1202,7 +1202,7 @@ int CSTXProtocol::GetNextString(char *lpBuffer, int cchBufferLen )
 
 		if (m_nCurentWriteOffset - m_nCurentReadOffset < nStringLen + nLengthBytes + 1)
 		{
-			//AssertBreak(_T("GetNextString() : Not enough string data available."));
+			throw std::runtime_error("GetNextString(char*,int) : Not enough string data available.");
 			return -1;
 		}
 
@@ -1236,7 +1236,7 @@ int CSTXProtocol::GetNextString(char *lpBuffer, int cchBufferLen )
 
 		if (m_nCurentWriteOffset - m_nCurentReadOffset < nStringLen + nLengthBytes + 1)
 		{
-			//AssertBreak(_T("GetNextString() : Not enough string data available."));
+			throw std::runtime_error("GetNextString(char*,int) : Not enough string data available.");
 			return -1;
 		}
 
@@ -1257,6 +1257,7 @@ int CSTXProtocol::GetNextString(char *lpBuffer, int cchBufferLen )
 		return nStringLen;
 	}
 
+	throw std::runtime_error("GetNextString(char*,int) : Next field is not any of the String types.");
 	return 0;
 }
 
@@ -1274,7 +1275,7 @@ int CSTXProtocol::GetNextString(wchar_t *lpBuffer, int cchBufferLen)
 
 		if (m_nCurentWriteOffset - m_nCurentReadOffset < nStringLen + nLengthBytes + 1)
 		{
-			//AssertBreak(_T("GetNextString() : Not enough string data available."));
+			throw std::runtime_error("GetNextString(wchar_t*,int) : Not enough string data available.");
 			return -1;
 		}
 
@@ -1308,7 +1309,7 @@ int CSTXProtocol::GetNextString(wchar_t *lpBuffer, int cchBufferLen)
 
 		if (m_nCurentWriteOffset - m_nCurentReadOffset < nStringLen + nLengthBytes + 1)
 		{
-			//AssertBreak(_T("GetNextString() : Not enough string data available."));
+			throw std::runtime_error("GetNextString(wchar_t*,int) : Not enough string data available.");
 			return -1;
 		}
 
@@ -1343,7 +1344,7 @@ std::string CSTXProtocol::GetNextString()
 		}
 		if (m_nCurentWriteOffset - m_nCurentReadOffset < nStringLen + nLengthBytes + 1)
 		{
-			//AssertBreak(_T("GetNextString() : Not enough string data available."));
+			throw std::runtime_error("GetNextString() : Not enough string data available.");
 			return "";
 		}
 
@@ -1369,7 +1370,7 @@ std::string CSTXProtocol::GetNextString()
 		}
 		if (m_nCurentWriteOffset - m_nCurentReadOffset < nStringLen + nLengthBytes + 1)
 		{
-			//AssertBreak(_T("GetNextString() : Not enough string data available."));
+			throw std::runtime_error("GetNextString() : Not enough string data available.");
 			return "";
 		}
 
@@ -1384,6 +1385,7 @@ std::string CSTXProtocol::GetNextString()
 
 		return str;
 	}
+	throw std::runtime_error("GetNextUnicodeString() : Next field is not UTF8/Unicode type.");
 	return "";
 }
 
@@ -1400,7 +1402,7 @@ bool CSTXProtocol::GetNextString( CSTXProtocolString *pString )
 	const unsigned char nType = STXPROTOCOL_DATA_TYPE_UTF8;
 	if(!IsValidDataType(nType))
 	{
-		//AssertBreak(_T("GetNextString() : Next field is not UTF8/Unicode type."));
+		throw std::runtime_error("GetNextString(CSTXProtocolString*) : Next field is not UTF8/Unicode type.");
 		return false;
 	}
 
@@ -1413,7 +1415,7 @@ bool CSTXProtocol::GetNextString( CSTXProtocolString *pString )
 
 	if(m_nCurentWriteOffset - m_nCurentReadOffset < nStringLen + nLengthBytes + 1)
 	{
-		//AssertBreak(_T("GetNextString() : Not enough string data available."));
+		throw std::runtime_error("GetNextString(CSTXProtocolString*) : Not enough string data available.");
 		return false;
 	}
 
@@ -1421,7 +1423,7 @@ bool CSTXProtocol::GetNextString( CSTXProtocolString *pString )
 
 
 	std::wstring_convert<std::codecvt_utf8<wchar_t>> conv;
-	std::wstring str = conv.from_bytes(pStrBase, pStrBase + nLengthBytes);
+	std::wstring str = conv.from_bytes(pStrBase, pStrBase + nStringLen);
 
 	wchar_t *pBuffer = pString->GetBuffer(str.size() + 1);
 	memcpy(pBuffer, str.c_str(), str.size() * sizeof(wchar_t));
@@ -1447,7 +1449,7 @@ bool CSTXProtocol::GetNextUnicodeString(CSTXProtocolString *pString)
 	const unsigned char nType = STXPROTOCOL_DATA_TYPE_UNICODE;
 	if (!IsValidDataType(nType))
 	{
-		//AssertBreak(_T("GetNextUnicodeString() : Next field is not UTF8/Unicode type."));
+		throw std::runtime_error("GetNextUnicodeString(CSTXProtocolString*) : Next field is not UTF8/Unicode type.");
 		return false;
 	}
 
@@ -1460,7 +1462,7 @@ bool CSTXProtocol::GetNextUnicodeString(CSTXProtocolString *pString)
 
 	if (m_nCurentWriteOffset - m_nCurentReadOffset < nStringLen + nLengthBytes + 1)
 	{
-		//AssertBreak(_T("GetNextUnicodeString() : Not enough string data available."));
+		throw std::runtime_error("GetNextUnicodeString(CSTXProtocolString*) : Not enough string data available.");
 		return false;
 	}
 
@@ -1478,6 +1480,63 @@ bool CSTXProtocol::GetNextUnicodeString(CSTXProtocolString *pString)
 	return true;
 }
 
+
+std::wstring CSTXProtocol::GetNextUnicodeString()
+{
+	if (IsValidDataType(STXPROTOCOL_DATA_TYPE_UTF8))
+	{
+		unsigned char nLengthBytes = 0;
+		long nStringLen = DecodeCompactInteger(GetDataContentBasePtr() + m_nCurentReadOffset + 1, &nLengthBytes);
+		if (nStringLen == -1)
+		{
+			return L"";
+		}
+		if (m_nCurentWriteOffset - m_nCurentReadOffset < nStringLen + nLengthBytes + 1)
+		{
+			throw std::runtime_error("GetNextUnicodeString() : Not enough string data available.");
+			return L"";
+		}
+
+		const char* pStrBase = GetDataContentBasePtr() + m_nCurentReadOffset + 1 + nLengthBytes;
+
+		std::wstring_convert<std::codecvt_utf8<wchar_t>> conv;
+		std::wstring str = conv.from_bytes(pStrBase, pStrBase + nStringLen);
+
+		SkipTypeIndicator();
+		m_nCurentReadOffset += nLengthBytes;
+		m_nCurentReadOffset += nStringLen;
+
+		return str;
+	}
+	else if (IsValidDataType(STXPROTOCOL_DATA_TYPE_UNICODE))
+	{
+		unsigned char nLengthBytes = 0;
+		long nStringLen = DecodeCompactInteger(GetDataContentBasePtr() + m_nCurentReadOffset + 1, &nLengthBytes);
+		if (nStringLen == -1)
+		{
+			return L"";
+		}
+		if (m_nCurentWriteOffset - m_nCurentReadOffset < nStringLen + nLengthBytes + 1)
+		{
+			throw std::runtime_error("GetNextUnicodeString() : Not enough string data available.");
+			return L"";
+		}
+
+		const wchar_t* pStrBase = (wchar_t*)(GetDataContentBasePtr() + m_nCurentReadOffset + 1 + nLengthBytes);
+
+		std::wstring s;
+		s.resize(nStringLen / sizeof(wchar_t));
+		memcpy((void*)(char*)s.c_str(), pStrBase, nStringLen);
+
+		SkipTypeIndicator();
+		m_nCurentReadOffset += nLengthBytes;
+		m_nCurentReadOffset += nStringLen;
+
+		return s;
+	}
+	throw std::runtime_error("GetNextUnicodeString() : Next field is not UTF8/Unicode type.");
+	return L"";
+}
 
 void CSTXProtocol::SkipNextField()
 {
@@ -1531,7 +1590,7 @@ int CSTXProtocol::GetNextRawData( void *pBuffer, int cbBufferSize )
 	const unsigned char nType = STXPROTOCOL_DATA_TYPE_RAW;
 	if(!IsValidDataType(nType))
 	{
-		//AssertBreak(_T("GetNextRawData() : Next field is not Raw type."));
+		throw std::runtime_error("GetNextObject() : Next field is not Raw type.");
 		return -1;
 	}
 
@@ -1544,7 +1603,7 @@ int CSTXProtocol::GetNextRawData( void *pBuffer, int cbBufferSize )
 
 	if(m_nCurentWriteOffset - m_nCurentReadOffset < nFieldLen + nLengthBytes + 1)
 	{
-		//AssertBreak(_T("GetNextRawData() : Not enough raw data available."));
+		throw std::runtime_error("GetNextObject() : Not enough raw data available.");
 		return -1;
 	}
 
@@ -1555,7 +1614,7 @@ int CSTXProtocol::GetNextRawData( void *pBuffer, int cbBufferSize )
 
 	if(nFieldLen > cbBufferSize)
 	{
-		//AssertBreak(_T("GetNextRawData() : Buffer size is too small to store raw data."));
+		throw std::runtime_error("GetNextObject() : Buffer size is too small to store raw data.");
 		return -1;
 	}
 
@@ -1769,7 +1828,7 @@ int CSTXProtocol::GetNextUnicodeString(char *lpBuffer, int cchBufferLen )
 	const unsigned char nType = STXPROTOCOL_DATA_TYPE_UNICODE;
 	if(!IsValidDataType(nType))
 	{
-		//AssertBreak(_T("GetNextUnicodeString() : Next field is not UTF8/Unicode type."));
+		throw std::runtime_error("GetNextObject() : Next field is not UTF8/Unicode type.");
 		return -1;
 	}
 
@@ -1782,7 +1841,7 @@ int CSTXProtocol::GetNextUnicodeString(char *lpBuffer, int cchBufferLen )
 
 	if(m_nCurentWriteOffset - m_nCurentReadOffset < nStringLen + nLengthBytes + 1)
 	{
-		//AssertBreak(_T("GetNextUnicodeString() : Not enough string data available."));
+		throw std::runtime_error("GetNextObject() : Not enough string data available.");
 		return -1;
 	}
 	const wchar_t* pStrBase = (const wchar_t*)(GetDataContentBasePtr() + m_nCurentReadOffset + 1 + nLengthBytes);
@@ -1810,7 +1869,7 @@ int CSTXProtocol::GetNextUnicodeString(wchar_t *lpBuffer, int cchBufferLen)
 	const unsigned char nType = STXPROTOCOL_DATA_TYPE_UNICODE;
 	if (!IsValidDataType(nType))
 	{
-		//AssertBreak(_T("GetNextUnicodeString() : Next field is not UTF8/Unicode type."));
+		throw std::runtime_error("GetNextObject() : Next field is not UTF8/Unicode type.");
 		return -1;
 	}
 
@@ -1823,7 +1882,7 @@ int CSTXProtocol::GetNextUnicodeString(wchar_t *lpBuffer, int cchBufferLen)
 
 	if (m_nCurentWriteOffset - m_nCurentReadOffset < nStringLen + nLengthBytes + 1)
 	{
-		//AssertBreak(_T("GetNextUnicodeString() : Not enough string data available."));
+		throw std::runtime_error("GetNextObject() : Not enough string data available.");
 		return -1;
 	}
 	const wchar_t* pStrBase = (const wchar_t*)(GetDataContentBasePtr() + m_nCurentReadOffset + 1 + nLengthBytes);
@@ -1954,7 +2013,7 @@ uint32_t CSTXProtocol::GetNextStringPair(char *lpBuffer1, int cchBufferLen1, cha
 	const unsigned char nType = STXPROTOCOL_DATA_TYPE_UTF8_PAIR;
 	if(!IsValidDataType(nType))
 	{
-		//AssertBreak(_T("GetNextStringPair() : Next field is not String Pair type."));
+		throw std::runtime_error("GetNextObject() : Next field is not String Pair type.");
 		return -1;
 	}
 
@@ -1972,7 +2031,7 @@ uint32_t CSTXProtocol::GetNextStringPair(wchar_t *lpBuffer1, int cchBufferLen1, 
 	const unsigned char nType = STXPROTOCOL_DATA_TYPE_UTF8_PAIR;
 	if(!IsValidDataType(nType))
 	{
-		//AssertBreak(_T("GetNextStringPair() : Next field is not String Pair type."));
+		throw std::runtime_error("GetNextObject() : Next field is not String Pair type.");
 		return -1;
 	}
 
@@ -2126,7 +2185,7 @@ uint32_t CSTXProtocol::GetNextUnicodeStringPair( char *lpBuffer1, int cchBufferL
 	const unsigned char nType = STXPROTOCOL_DATA_TYPE_UNICODE_PAIR;
 	if(!IsValidDataType(nType))
 	{
-		//AssertBreak(_T("GetNextStringPair() : Next field is not String Pair type."));
+		throw std::runtime_error("GetNextObject() : Next field is not String Pair type.");
 		return -1;
 	}
 
@@ -2144,7 +2203,7 @@ uint32_t CSTXProtocol::GetNextUnicodeStringPair(wchar_t *lpBuffer1, int cchBuffe
 	const unsigned char nType = STXPROTOCOL_DATA_TYPE_UNICODE_PAIR;
 	if (!IsValidDataType(nType))
 	{
-		//AssertBreak(_T("GetNextStringPair() : Next field is not String Pair type."));
+		throw std::runtime_error("GetNextObject() : Next field is not String Pair type.");
 		return -1;
 	}
 

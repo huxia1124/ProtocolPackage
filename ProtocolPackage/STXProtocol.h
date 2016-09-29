@@ -246,6 +246,7 @@ public:
 	int GetNextUnicodeString(char *lpBuffer, int cchBufferLen);
 	int GetNextUnicodeString(wchar_t *lpBuffer, int cchBufferLen);
 	bool GetNextUnicodeString(CSTXProtocolString *pString);
+	std::wstring GetNextUnicodeString();
 	int GetNextRawData(void *pBuffer, int cbBufferSize);
 	uint32_t GetNextStringPair(char *lpBuffer1, int cchBufferLen1, char *lpBuffer2, int cchBufferLen2);
 	uint32_t GetNextStringPair(wchar_t *lpBuffer1, int cchBufferLen1, wchar_t *lpBuffer2, int cchBufferLen2);

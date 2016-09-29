@@ -162,6 +162,7 @@
     </ClCompile>
     <ClCompile Include="TestAppend.cpp" />
     <ClCompile Include="TestRetrieve.cpp" />
+    <ClCompile Include="TestRetrieveUnexpectedType.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ProtocolPackage\ProtocolPackage.vcxproj">
