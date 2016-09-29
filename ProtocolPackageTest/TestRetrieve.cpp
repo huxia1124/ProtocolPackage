@@ -52,21 +52,21 @@ namespace ProtocolPackageTest
 			proStrings.AppendData("Hello Kitty");		//Store as UTF8
 			proStrings.AppendData("Test");				//Store as UTF8
 			proStrings.AppendData("More Test");			//Store as UTF8
-			proStrings.AppendData(L"More Unicode Test");		//Store as UTF8
+			proStrings.AppendData(u"More Unicode Test");		//Store as UTF8
 			proStrings.AppendRawData("Hello", 5);
-			proStrings.AppendUnicodeString(L"World");			//Store as Unicode(wchar_t)
-			proStrings.AppendUnicodeString(L"Try Another One 123");		//Store as Unicode(wchar_t)
-			proStrings.AppendUnicodeString(L"!!@@##$$%%");		//Store as Unicode(wchar_t)
+			proStrings.AppendUnicodeString(u"World");			//Store as Unicode(char16_t)
+			proStrings.AppendUnicodeString(u"Try Another One 123");		//Store as Unicode(char16_t)
+			proStrings.AppendUnicodeString(u"!!@@##$$%%");		//Store as Unicode(char16_t)
 			proStrings.AppendData("Another String UTF8");		//Store as UTF8
-			proStrings.AppendUnicodeString("Unicode Again");		//Store as Unicode(wchar_t)
+			proStrings.AppendUnicodeString("Unicode Again");		//Store as Unicode(char16_t)
 			proStrings.AppendData("Test1");		//Store as UTF8
 			proStrings.AppendData("Test2");		//Store as UTF8
 
 			Assert::AreEqual(std::string("Hello World"), proStrings.GetNextString());
 			Assert::AreEqual(std::string("Hello Kitty"), proStrings.GetNextString());
-			wchar_t buf[64] = {0};
+			char16_t buf[64] = {0};
 			proStrings.GetNextString(buf, 64);
-			Assert::AreEqual(std::wstring(L"Test"), std::wstring(buf));
+			Assert::IsTrue(std::u16string(u"Test") == std::u16string(buf));
 
 			char buf2[64] = { 0 };
 			proStrings.GetNextString(buf2, 64);
@@ -79,17 +79,17 @@ namespace ProtocolPackageTest
 			proStrings.GetNextRawData((void*)bufRaw, 32);
 			Assert::AreEqual(0, memcmp(bufRaw, "Hello", 5));
 
-			wchar_t bufUnicode[64] = { 0 };
+			char16_t bufUnicode[64] = { 0 };
 			proStrings.GetNextUnicodeString(bufUnicode, 32);
-			Assert::AreEqual(std::wstring(L"World"), std::wstring(bufUnicode));
+			Assert::IsTrue(std::u16string(u"World") == std::u16string(bufUnicode));
 
 			proStrings.GetNextString(buf2, 64);
 			Assert::AreEqual(std::string("Try Another One 123"), std::string(buf2));
 
 			Assert::AreEqual(std::string("!!@@##$$%%"), proStrings.GetNextString());
 
-			Assert::AreEqual(std::wstring(L"Another String UTF8"), proStrings.GetNextUnicodeString());
-			Assert::AreEqual(std::wstring(L"Unicode Again"), proStrings.GetNextUnicodeString());
+			Assert::IsTrue(std::u16string(u"Another String UTF8") == proStrings.GetNextUnicodeString());
+			Assert::IsTrue(std::u16string(u"Unicode Again") == proStrings.GetNextUnicodeString());
 
 			CSTXProtocolString s1;
 			proStrings.GetNextString(&s1);
@@ -97,7 +97,7 @@ namespace ProtocolPackageTest
 
 			CSTXProtocolString s2;
 			proStrings.GetNextString(&s2);
-			Assert::AreEqual(std::wstring(L"Test2"), std::wstring((const wchar_t*)s2));
+			Assert::IsTrue(std::u16string(u"Test2") == std::u16string((const char16_t*)s2));
 
 		}
 
@@ -118,32 +118,32 @@ namespace ProtocolPackageTest
 			CSTXProtocol proPairs;
 
 			proPairs.AppendDataPair("Hello", "World");
-			proPairs.AppendDataPair(L"Goodbye", L"Kitty");
+			proPairs.AppendDataPair(u"Goodbye", u"Kitty");
 			proPairs.AppendDataPair("Nice weather", 1024);
-			proPairs.AppendDataPair(L"Hi there", 1921);
+			proPairs.AppendDataPair(u"Hi there", 1921);
 			proPairs.AppendUnicodeStringPair("Go", "Home");
 
-			wchar_t buf1[64] = { 0 };
-			wchar_t buf2[64] = { 0 };
+			char16_t buf1[64] = { 0 };
+			char16_t buf2[64] = { 0 };
 			proPairs.GetNextStringPair(buf1, 64, buf2, 64);
-			Assert::AreEqual(std::wstring(L"Hello"), std::wstring(buf1));
-			Assert::AreEqual(std::wstring(L"World"), std::wstring(buf2));
+			Assert::IsTrue(std::u16string(u"Hello") == std::u16string(buf1));
+			Assert::IsTrue(std::u16string(u"World") == std::u16string(buf2));
 
 			proPairs.GetNextStringPair(buf1, 64, buf2, 64);
-			Assert::AreEqual(std::wstring(L"Goodbye"), std::wstring(buf1));
-			Assert::AreEqual(std::wstring(L"Kitty"), std::wstring(buf2));
+			Assert::IsTrue(std::u16string(u"Goodbye") == std::u16string(buf1));
+			Assert::IsTrue(std::u16string(u"Kitty") == std::u16string(buf2));
 
 			uint32_t val = proPairs.GetNextStringToDWORDPair(buf1, 64);
-			Assert::AreEqual(std::wstring(L"Nice weather"), std::wstring(buf1));
+			Assert::IsTrue(std::u16string(u"Nice weather") == std::u16string(buf1));
 			Assert::AreEqual(uint32_t(1024), val);
 
 			val = proPairs.GetNextStringToDWORDPair(buf2, 64);
-			Assert::AreEqual(std::wstring(L"Hi there"), std::wstring(buf2));
+			Assert::IsTrue(std::u16string(u"Hi there") == std::u16string(buf2));
 			Assert::AreEqual(uint32_t(1921), val);
 
 			proPairs.GetNextUnicodeStringPair(buf1, 64, buf2, 64);
-			Assert::AreEqual(std::wstring(L"Go"), std::wstring(buf1));
-			Assert::AreEqual(std::wstring(L"Home"), std::wstring(buf2));
+			Assert::IsTrue(std::u16string(u"Go") == std::u16string(buf1));
+			Assert::IsTrue(std::u16string(u"Home") == std::u16string(buf2));
 
 		}
 		TEST_METHOD(TestRetrieveRawData)
@@ -202,13 +202,13 @@ namespace ProtocolPackageTest
 			pro.AppendData((int64_t)64);
 			pro.AppendData((uint16_t)16);
 			pro.AppendData((unsigned char)'C');
-			pro.AppendUnicodeString(L"Unicode");
-			pro.AppendUnicodeString(L"UnicodeString2");
+			pro.AppendUnicodeString(u"Unicode");
+			pro.AppendUnicodeString(u"UnicodeString2");
 			pro.AppendData(guid);
 			*/
-			pro.AppendDataPair(L"Data1", 1024);
+			pro.AppendDataPair(u"Data1", 1024);
 			pro.AppendData(&proEmbedded);
-			//pro.AppendUnicodeStringPair(L"UPKey1", L"UPValue1");
+			//pro.AppendUnicodeStringPair(u"UPKey1", u"UPValue1");
 			pro.AppendDataPair("Data2", 2048);
 
 			pro.SeekReadToBegin();

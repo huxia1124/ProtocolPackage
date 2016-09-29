@@ -55,12 +55,11 @@ int CSTXProtocolUtility::ConvertString(const char* pszUTF8, int cchUTF8, char *p
 	return cchUTF8;
 }
 
-int CSTXProtocolUtility::ConvertString(const char* pszUTF8, int cchUTF8, wchar_t *pszBuffer, int cchBuffer)
+int CSTXProtocolUtility::ConvertString(const char* pszUTF8, int cchUTF8, char16_t *pszBuffer, int cchBuffer)
 {
 	//UTF8->wchar
 
-	std::wstring_convert<std::codecvt_utf8<wchar_t>> conv;
-	std::wstring wstr = conv.from_bytes(pszUTF8, pszUTF8 + cchUTF8);
+	std::u16string wstr = CSTXProtocolUtility::UTF8ToUTF16(pszUTF8, pszUTF8 + cchUTF8);
 
 	if (pszBuffer == nullptr)
 		return wstr.size() + 1;
@@ -75,16 +74,15 @@ int CSTXProtocolUtility::ConvertString(const char* pszUTF8, int cchUTF8, wchar_t
 		return wstr.size();
 	}
 
-	memcpy(pszBuffer, wstr.c_str(), wstr.size() * sizeof(wchar_t));
+	memcpy(pszBuffer, wstr.c_str(), wstr.size() * sizeof(char16_t));
 	pszBuffer[wstr.size()] = 0;
 	return wstr.size();
 }
 
-int CSTXProtocolUtility::ConvertString( const wchar_t* pszUnicode, int cchUnicode, char* pszBuffer, int cchBuffer )
+int CSTXProtocolUtility::ConvertString( const char16_t* pszUnicode, int cchUnicode, char* pszBuffer, int cchBuffer )
 {
 	//wchar->UTF8
-	std::wstring_convert<std::codecvt_utf8<wchar_t>> conv;
-	std::string str = conv.to_bytes(pszUnicode, pszUnicode + cchUnicode);
+	std::string str = CSTXProtocolUtility::UTF16ToUTF8(pszUnicode, pszUnicode + cchUnicode);
 
 	if (pszBuffer == nullptr)
 		return str.size() + 1;
@@ -104,7 +102,7 @@ int CSTXProtocolUtility::ConvertString( const wchar_t* pszUnicode, int cchUnicod
 	return str.size();
 }
 
-int CSTXProtocolUtility::ConvertString(const wchar_t* pszUTF8, int cchUTF8, wchar_t* pszBuffer, int cchBuffer)
+int CSTXProtocolUtility::ConvertString(const char16_t* pszUTF8, int cchUTF8, char16_t* pszBuffer, int cchBuffer)
 {
 	//wchar->wchar
 
@@ -119,7 +117,7 @@ int CSTXProtocolUtility::ConvertString(const wchar_t* pszUTF8, int cchUTF8, wcha
 	{
 		return cchUTF8;
 	}
-	memcpy(pszBuffer, pszUTF8, cchUTF8 * sizeof(wchar_t));
+	memcpy(pszBuffer, pszUTF8, cchUTF8 * sizeof(char16_t));
 	pszBuffer[cchUTF8] = 0;
 	return cchUTF8;
 }
@@ -140,11 +138,11 @@ int CSTXProtocolUtility::ConvertStringToUTF8(const char* pszSrc, char *pszBuffer
 	return len;
 }
 
-int CSTXProtocolUtility::ConvertStringToUTF8(const wchar_t* pszSrc, char *pszBuffer, int cchBuffer)
+int CSTXProtocolUtility::ConvertStringToUTF8(const char16_t* pszSrc, char *pszBuffer, int cchBuffer)
 {
 	//wchar->UTF8
-	std::wstring_convert<std::codecvt_utf8<wchar_t>> conv;
-	std::string str = conv.to_bytes(pszSrc);
+	std::string str = CSTXProtocolUtility::UTF16ToUTF8(pszSrc);
+
 	if (pszBuffer == nullptr)
 		return str.size() + 1;
 
@@ -158,7 +156,7 @@ int CSTXProtocolUtility::ConvertStringToUTF8(const wchar_t* pszSrc, char *pszBuf
 	return str.size();
 }
 
-int CSTXProtocolUtility::ConvertStringToUnicode(const char* pszSrc, wchar_t *pszBuffer, int cchBuffer)
+int CSTXProtocolUtility::ConvertStringToUnicode(const char* pszSrc, char16_t *pszBuffer, int cchBuffer)
 {
 	size_t len = strlen(pszSrc);
 	if (pszBuffer == nullptr)
@@ -174,9 +172,9 @@ int CSTXProtocolUtility::ConvertStringToUnicode(const char* pszSrc, wchar_t *psz
 	return len;
 }
 
-int CSTXProtocolUtility::ConvertStringToUnicode(const wchar_t* pszSrc, wchar_t *pszBuffer, int cchBuffer)
+int CSTXProtocolUtility::ConvertStringToUnicode(const char16_t* pszSrc, char16_t *pszBuffer, int cchBuffer)
 {
-	size_t len = wcslen(pszSrc);
+	size_t len = std::char_traits<char16_t>::length(pszSrc);
 	if (pszBuffer == nullptr)
 		return len + 1;
 	if (cchBuffer < len + 1)
@@ -184,7 +182,7 @@ int CSTXProtocolUtility::ConvertStringToUnicode(const wchar_t* pszSrc, wchar_t *
 		return -1;
 	}
 
-	memcpy(pszBuffer, pszSrc, len * sizeof(wchar_t));
+	memcpy(pszBuffer, pszSrc, len * sizeof(char16_t));
 	pszBuffer[len] = 0;
 	return len;
 }
@@ -234,6 +232,66 @@ long CSTXProtocolUtility::ConvertToHexString(unsigned char* lpData, uint32_t cbD
 
 }
 
+std::string CSTXProtocolUtility::UTF16ToUTF8(std::u16string utf16_string)
+{
+#if _MSC_VER == 1900
+	std::wstring_convert<std::codecvt_utf8_utf16<int16_t>, int16_t> convert;
+	auto p = reinterpret_cast<const int16_t *>(utf16_string.data());
+	return convert.to_bytes(p, p + utf16_string.size());
+#else
+
+	std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> convert;
+	return convert.to_bytes(utf16_string);
+#endif
+}
+
+std::string CSTXProtocolUtility::UTF16ToUTF8(const char16_t *begin, const char16_t *end)
+{
+#if _MSC_VER == 1900
+	std::wstring_convert<std::codecvt_utf8_utf16<int16_t>, int16_t> convert;
+	auto pb = reinterpret_cast<const int16_t *>(begin);
+	auto pe = reinterpret_cast<const int16_t *>(end);
+	return convert.to_bytes(pb, pe);
+#else
+
+	std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> convert;
+	return convert.to_bytes(begin, end);
+#endif
+}
+
+std::u16string CSTXProtocolUtility::UTF8ToUTF16(std::string utf8_string)
+{
+#if _MSC_VER == 1900
+	std::wstring_convert<std::codecvt_utf8_utf16<int16_t>, int16_t> convert;
+	auto p = convert.from_bytes(utf8_string.data());
+	std::u16string s;
+	s.resize(p.size());
+	memcpy((void*)s.c_str(), p.data(), p.size() * sizeof(int16_t));
+	return s;
+#else
+
+	std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> convert;
+	return convert.from_bytes(utf8_string);
+#endif
+
+}
+
+std::u16string CSTXProtocolUtility::UTF8ToUTF16(const char *begin, const char *end)
+{
+#if _MSC_VER == 1900
+	std::wstring_convert<std::codecvt_utf8_utf16<int16_t>, int16_t> convert;
+	auto p = convert.from_bytes(begin, end);
+	std::u16string s;
+	s.resize(p.size());
+	memcpy((void*)s.c_str(), p.data(), p.size() * sizeof(int16_t));
+	return s;
+#else
+
+	std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> convert;
+	return convert.from_bytes(begin, end);
+#endif
+}
+
 //////////////////////////////////////////////////////////////////////////
 // CSTXProtocolString
 
@@ -260,7 +318,7 @@ CSTXProtocolString::CSTXProtocolString( STXPROTOCOLVALUE *pVal )
 		}
 		else if((pVal->nValueType & 0x8F) == STXPROTOCOL_DATA_TYPE_UNICODE)
 		{
-			int nExpand = CSTXProtocolUtility::ConvertString(pVal->pszUnicodeString, pVal->cchUnicodeStringLen, (wchar_t*)nullptr, 0);
+			int nExpand = CSTXProtocolUtility::ConvertString(pVal->pszUnicodeString, pVal->cchUnicodeStringLen, (char16_t*)nullptr, 0);
 			ExpandTo(nExpand);
 			CSTXProtocolUtility::ConvertString(pVal->pszUnicodeString, pVal->cchUnicodeStringLen, m_pBuffer, m_cchBufferSize);
 			return;
@@ -364,10 +422,10 @@ long CSTXProtocolString::ConvertToHexString(unsigned char* lpData, uint32_t cbDa
 	return cbDataLen * 2;
 }
 
-long CSTXProtocolString::ConvertToHexString(unsigned char* lpData, uint32_t cbDataLen, wchar_t *lpszHexBuf, bool bUpperCased)
+long CSTXProtocolString::ConvertToHexString(unsigned char* lpData, uint32_t cbDataLen, char16_t *lpszHexBuf, bool bUpperCased)
 {
-	static const wchar_t szHexDictUpper[16] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
-	static const wchar_t szHexDictLower[16] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
+	static const char16_t szHexDictUpper[16] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
+	static const char16_t szHexDictLower[16] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
 	uint32_t i = 0;
 	if (bUpperCased)
 	{
@@ -393,12 +451,16 @@ void CSTXProtocolString::ExpandTo( int cchMax )
 {
 	while(cchMax > m_cchBufferSize)
 	{
+#ifdef max
+		long cchNewBufferLen = max(m_cchBufferSize * 2, STXPROTOCOL_INITIAL_STRING_SIZE);
+#else
 		long cchNewBufferLen = std::max(m_cchBufferSize * 2, STXPROTOCOL_INITIAL_STRING_SIZE);
-		wchar_t *pNewBuffer = new wchar_t[cchNewBufferLen];
+#endif
+		char16_t *pNewBuffer = new char16_t[cchNewBufferLen];
 		pNewBuffer[0] = 0;
 		if(m_pBuffer)
 		{
-			wcscpy(pNewBuffer, m_pBuffer);
+			std::char_traits<char16_t>::copy(pNewBuffer, m_pBuffer, std::char_traits<char16_t>::length(m_pBuffer));
 			delete []m_pBuffer;
 		}
 		m_pBuffer = pNewBuffer;
@@ -406,7 +468,7 @@ void CSTXProtocolString::ExpandTo( int cchMax )
 	}
 }
 
-wchar_t *CSTXProtocolString::GetBuffer( int nBufferLength /*= 0*/ )
+char16_t *CSTXProtocolString::GetBuffer( int nBufferLength /*= 0*/ )
 {
 	if(nBufferLength > 0)
 		ExpandTo(nBufferLength);
@@ -414,7 +476,7 @@ wchar_t *CSTXProtocolString::GetBuffer( int nBufferLength /*= 0*/ )
 	return m_pBuffer;
 }
 
-CSTXProtocolString::operator const wchar_t*()
+CSTXProtocolString::operator const char16_t*()
 {
 	return m_pBuffer;
 }
@@ -424,8 +486,7 @@ CSTXProtocolString::operator const char*()
 {
 	if (m_convertedUTF8.size() == 0)
 	{
-		std::wstring_convert<std::codecvt_utf8<wchar_t>> conv;
-		m_convertedUTF8 = conv.to_bytes(m_pBuffer);
+		m_convertedUTF8 = CSTXProtocolUtility::UTF16ToUTF8(m_pBuffer);
 	}
 	return m_convertedUTF8.c_str();
 }
@@ -433,7 +494,7 @@ CSTXProtocolString::operator const char*()
 
 int CSTXProtocolString::GetLength()
 {
-	return wcslen(m_pBuffer);
+	return std::char_traits<char16_t>::length(m_pBuffer);
 }
 
 
@@ -621,15 +682,14 @@ long CSTXProtocol::AppendData( int64_t val )
 	return sizeof(val);
 }
 
-long CSTXProtocol::AppendData(wchar_t *lpszVal)
+long CSTXProtocol::AppendData(char16_t *lpszVal)
 {
-	return AppendData((const wchar_t*)lpszVal);
+	return AppendData((const char16_t*)lpszVal);
 }
 
-long CSTXProtocol::AppendData(const wchar_t *lpszVal)
+long CSTXProtocol::AppendData(const char16_t *lpszVal)
 {
-	std::wstring_convert<std::codecvt_utf8<wchar_t>> conv;
-	std::string str = conv.to_bytes(lpszVal);
+	std::string str = CSTXProtocolUtility::UTF16ToUTF8(lpszVal);
 
 	WriteDataType(STXPROTOCOL_DATA_TYPE_UTF8);
 	WriteCompactInteger(str.size());
@@ -653,13 +713,13 @@ long CSTXProtocol::AppendData(const char *lpszVal)
 	return len;
 }
 
-long CSTXProtocol::AppendUnicodeString( const wchar_t* lpszVal )
+long CSTXProtocol::AppendUnicodeString( const char16_t* lpszVal )
 {
 	if(lpszVal == nullptr)
 		return -1;
 
-	int nStrLen = wcslen(lpszVal);
-	long cbLen = nStrLen * sizeof(wchar_t);
+	int nStrLen = std::char_traits<char16_t>::length(lpszVal);
+	long cbLen = nStrLen * sizeof(char16_t);
 	WriteDataType(STXPROTOCOL_DATA_TYPE_UNICODE);
 	WriteCompactInteger(cbLen);
 	Expand(cbLen);
@@ -672,11 +732,10 @@ long CSTXProtocol::AppendUnicodeString(const char* lpszVal)
 	if (lpszVal == nullptr)
 		return -1;
 
-	std::wstring_convert<std::codecvt_utf8<wchar_t>> conv;
-	std::wstring wstr = conv.from_bytes(lpszVal);
+	std::u16string wstr = CSTXProtocolUtility::UTF8ToUTF16(lpszVal);
 
 	size_t nStrLen = wstr.size();
-	size_t cbLen = nStrLen * sizeof(wchar_t);
+	size_t cbLen = nStrLen * sizeof(char16_t);
 	WriteDataType(STXPROTOCOL_DATA_TYPE_UNICODE);
 	WriteCompactInteger(cbLen);
 	Expand(cbLen);
@@ -691,18 +750,17 @@ long CSTXProtocol::AppendUnicodeStringPair( const char* lpszVal1, const char* lp
 
 	WriteDataType(STXPROTOCOL_DATA_TYPE_UNICODE_PAIR);
 
-	std::wstring_convert<std::codecvt_utf8<wchar_t>> conv;
-	std::wstring wstr1 = conv.from_bytes(lpszVal1);
+	std::u16string wstr1 = CSTXProtocolUtility::UTF8ToUTF16(lpszVal1);
 
 	size_t nStrLen = wstr1.size();
-	size_t cbLen = nStrLen * sizeof(wchar_t);
+	size_t cbLen = nStrLen * sizeof(char16_t);
 	WriteCompactInteger(cbLen);
 	Expand(cbLen);
 	WriteRawData((void*)wstr1.c_str(), cbLen);	//Skip nullptr-termination
 
-	std::wstring wstr2 = conv.from_bytes(lpszVal2);
+	std::u16string wstr2 = CSTXProtocolUtility::UTF8ToUTF16(lpszVal2);
 	size_t nStrLen2 = wstr2.size();
-	size_t cbLen2 = nStrLen2 * sizeof(wchar_t);
+	size_t cbLen2 = nStrLen2 * sizeof(char16_t);
 	WriteCompactInteger(cbLen2);
 	Expand(cbLen2);
 	WriteRawData((void*)wstr2.c_str(), cbLen2);	//Skip nullptr-termination
@@ -710,21 +768,21 @@ long CSTXProtocol::AppendUnicodeStringPair( const char* lpszVal1, const char* lp
 	return cbLen + cbLen2;
 }
 
-long CSTXProtocol::AppendUnicodeStringPair(const wchar_t* lpszVal1, const wchar_t* lpszVal2)
+long CSTXProtocol::AppendUnicodeStringPair(const char16_t* lpszVal1, const char16_t* lpszVal2)
 {
 	if (lpszVal1 == nullptr || lpszVal2 == nullptr)
 		return -1;
 
 	WriteDataType(STXPROTOCOL_DATA_TYPE_UNICODE_PAIR);
 
-	int nStrLen = wcslen(lpszVal1);
-	long cbLen = nStrLen * sizeof(wchar_t);
+	int nStrLen = std::char_traits<char16_t>::length(lpszVal1);
+	long cbLen = nStrLen * sizeof(char16_t);
 	WriteCompactInteger(cbLen);
 	Expand(cbLen);
 	WriteRawData((void*)lpszVal1, cbLen);	//Skip nullptr-termination
 
-	int nStrLen2 = wcslen(lpszVal2);
-	long cbLen2 = nStrLen2 * sizeof(wchar_t);
+	int nStrLen2 = std::char_traits<char16_t>::length(lpszVal2);
+	long cbLen2 = nStrLen2 * sizeof(char16_t);
 	WriteCompactInteger(cbLen2);
 	Expand(cbLen2);
 	WriteRawData((void*)lpszVal2, cbLen2);	//Skip nullptr-termination
@@ -1206,10 +1264,9 @@ int CSTXProtocol::GetNextString(char *lpBuffer, int cchBufferLen )
 			return -1;
 		}
 
-		const wchar_t* pStrBase = (wchar_t*)(GetDataContentBasePtr() + m_nCurentReadOffset + 1 + nLengthBytes);
+		const char16_t* pStrBase = (char16_t*)(GetDataContentBasePtr() + m_nCurentReadOffset + 1 + nLengthBytes);
 
-		std::wstring_convert<std::codecvt_utf8<wchar_t>> conv;
-		std::string str = conv.to_bytes(pStrBase, pStrBase + nStringLen / sizeof(wchar_t));
+		std::string str = CSTXProtocolUtility::UTF16ToUTF8(pStrBase, pStrBase + nStringLen / sizeof(char16_t));
 
 		if (cchBufferLen < str.size() + 1)
 		{
@@ -1262,7 +1319,7 @@ int CSTXProtocol::GetNextString(char *lpBuffer, int cchBufferLen )
 }
 
 
-int CSTXProtocol::GetNextString(wchar_t *lpBuffer, int cchBufferLen)
+int CSTXProtocol::GetNextString(char16_t *lpBuffer, int cchBufferLen)
 {
 	if (IsValidDataType(STXPROTOCOL_DATA_TYPE_UTF8))
 	{
@@ -1275,21 +1332,20 @@ int CSTXProtocol::GetNextString(wchar_t *lpBuffer, int cchBufferLen)
 
 		if (m_nCurentWriteOffset - m_nCurentReadOffset < nStringLen + nLengthBytes + 1)
 		{
-			throw std::runtime_error("GetNextString(wchar_t*,int) : Not enough string data available.");
+			throw std::runtime_error("GetNextString(char16_t*,int) : Not enough string data available.");
 			return -1;
 		}
 
 		const char* pStrBase = GetDataContentBasePtr() + m_nCurentReadOffset + 1 + nLengthBytes;
 
-		std::wstring_convert<std::codecvt_utf8<wchar_t>> conv;
-		std::wstring str = conv.from_bytes(pStrBase, pStrBase + nStringLen);
+		std::u16string str = CSTXProtocolUtility::UTF8ToUTF16(pStrBase, pStrBase + nStringLen);
 
 		if (cchBufferLen < str.size() + 1)
 		{
 			return -1;
 		}
 
-		memcpy(lpBuffer, str.c_str(), str.size() * sizeof(wchar_t));
+		memcpy(lpBuffer, str.c_str(), str.size() * sizeof(char16_t));
 		lpBuffer[str.size()] = 0;
 
 		SkipTypeIndicator();
@@ -1309,7 +1365,7 @@ int CSTXProtocol::GetNextString(wchar_t *lpBuffer, int cchBufferLen)
 
 		if (m_nCurentWriteOffset - m_nCurentReadOffset < nStringLen + nLengthBytes + 1)
 		{
-			throw std::runtime_error("GetNextString(wchar_t*,int) : Not enough string data available.");
+			throw std::runtime_error("GetNextString(char16_t*,int) : Not enough string data available.");
 			return -1;
 		}
 
@@ -1374,10 +1430,9 @@ std::string CSTXProtocol::GetNextString()
 			return "";
 		}
 
-		const wchar_t* pStrBase = (wchar_t*)(GetDataContentBasePtr() + m_nCurentReadOffset + 1 + nLengthBytes);
+		const char16_t* pStrBase = (char16_t*)(GetDataContentBasePtr() + m_nCurentReadOffset + 1 + nLengthBytes);
 
-		std::wstring_convert<std::codecvt_utf8<wchar_t>> conv;
-		std::string str = conv.to_bytes(pStrBase, pStrBase + nStringLen / sizeof(wchar_t));
+		std::string str = CSTXProtocolUtility::UTF16ToUTF8(pStrBase, pStrBase + nStringLen / sizeof(char16_t));
 
 		SkipTypeIndicator();
 		m_nCurentReadOffset += nLengthBytes;
@@ -1421,12 +1476,10 @@ bool CSTXProtocol::GetNextString( CSTXProtocolString *pString )
 
 	const char* pStrBase = GetDataContentBasePtr() + m_nCurentReadOffset + 1 + nLengthBytes;
 
+	std::u16string str = CSTXProtocolUtility::UTF8ToUTF16(pStrBase, pStrBase + nStringLen);
 
-	std::wstring_convert<std::codecvt_utf8<wchar_t>> conv;
-	std::wstring str = conv.from_bytes(pStrBase, pStrBase + nStringLen);
-
-	wchar_t *pBuffer = pString->GetBuffer(str.size() + 1);
-	memcpy(pBuffer, str.c_str(), str.size() * sizeof(wchar_t));
+	char16_t *pBuffer = pString->GetBuffer(str.size() + 1);
+	memcpy(pBuffer, str.c_str(), str.size() * sizeof(char16_t));
 	pBuffer[str.size()] = 0;
 
 	SkipTypeIndicator();
@@ -1466,12 +1519,12 @@ bool CSTXProtocol::GetNextUnicodeString(CSTXProtocolString *pString)
 		return false;
 	}
 
-	const wchar_t* pStrBase = (const wchar_t*)(GetDataContentBasePtr() + m_nCurentReadOffset + 1 + nLengthBytes);
+	const char16_t* pStrBase = (const char16_t*)(GetDataContentBasePtr() + m_nCurentReadOffset + 1 + nLengthBytes);
 
-	wchar_t *pBuffer = pString->GetBuffer(nStringLen / sizeof(wchar_t) + 1);
+	char16_t *pBuffer = pString->GetBuffer(nStringLen / sizeof(char16_t) + 1);
 	memcpy(pBuffer, pStrBase, nLengthBytes);
 
-	pBuffer[nStringLen / sizeof(wchar_t)] = 0;
+	pBuffer[nStringLen / sizeof(char16_t)] = 0;
 
 	SkipTypeIndicator();
 	m_nCurentReadOffset += nLengthBytes;
@@ -1481,7 +1534,7 @@ bool CSTXProtocol::GetNextUnicodeString(CSTXProtocolString *pString)
 }
 
 
-std::wstring CSTXProtocol::GetNextUnicodeString()
+std::u16string CSTXProtocol::GetNextUnicodeString()
 {
 	if (IsValidDataType(STXPROTOCOL_DATA_TYPE_UTF8))
 	{
@@ -1489,18 +1542,17 @@ std::wstring CSTXProtocol::GetNextUnicodeString()
 		long nStringLen = DecodeCompactInteger(GetDataContentBasePtr() + m_nCurentReadOffset + 1, &nLengthBytes);
 		if (nStringLen == -1)
 		{
-			return L"";
+			return u"";
 		}
 		if (m_nCurentWriteOffset - m_nCurentReadOffset < nStringLen + nLengthBytes + 1)
 		{
 			throw std::runtime_error("GetNextUnicodeString() : Not enough string data available.");
-			return L"";
+			return u"";
 		}
 
 		const char* pStrBase = GetDataContentBasePtr() + m_nCurentReadOffset + 1 + nLengthBytes;
 
-		std::wstring_convert<std::codecvt_utf8<wchar_t>> conv;
-		std::wstring str = conv.from_bytes(pStrBase, pStrBase + nStringLen);
+		std::u16string str = CSTXProtocolUtility::UTF8ToUTF16(pStrBase, pStrBase + nStringLen);
 
 		SkipTypeIndicator();
 		m_nCurentReadOffset += nLengthBytes;
@@ -1514,18 +1566,18 @@ std::wstring CSTXProtocol::GetNextUnicodeString()
 		long nStringLen = DecodeCompactInteger(GetDataContentBasePtr() + m_nCurentReadOffset + 1, &nLengthBytes);
 		if (nStringLen == -1)
 		{
-			return L"";
+			return u"";
 		}
 		if (m_nCurentWriteOffset - m_nCurentReadOffset < nStringLen + nLengthBytes + 1)
 		{
 			throw std::runtime_error("GetNextUnicodeString() : Not enough string data available.");
-			return L"";
+			return u"";
 		}
 
-		const wchar_t* pStrBase = (wchar_t*)(GetDataContentBasePtr() + m_nCurentReadOffset + 1 + nLengthBytes);
+		const char16_t* pStrBase = (char16_t*)(GetDataContentBasePtr() + m_nCurentReadOffset + 1 + nLengthBytes);
 
-		std::wstring s;
-		s.resize(nStringLen / sizeof(wchar_t));
+		std::u16string s;
+		s.resize(nStringLen / sizeof(char16_t));
 		memcpy((void*)(char*)s.c_str(), pStrBase, nStringLen);
 
 		SkipTypeIndicator();
@@ -1535,7 +1587,7 @@ std::wstring CSTXProtocol::GetNextUnicodeString()
 		return s;
 	}
 	throw std::runtime_error("GetNextUnicodeString() : Next field is not UTF8/Unicode type.");
-	return L"";
+	return u"";
 }
 
 void CSTXProtocol::SkipNextField()
@@ -1713,8 +1765,8 @@ int CSTXProtocol::EnumValues(std::function<void(unsigned char originalType, STXP
 		{
 			unsigned char nLengthBytes = 0;
 			long nFieldLen = DecodeCompactInteger(GetDataContentBasePtr() + m_nCurentReadOffset + 1, &nLengthBytes);
-			val.cchUnicodeStringLen = nFieldLen / sizeof(wchar_t);
-			val.pszUnicodeString = (const wchar_t*)(GetDataContentBasePtr() + m_nCurentReadOffset + 1 + nLengthBytes);
+			val.cchUnicodeStringLen = nFieldLen / sizeof(char16_t);
+			val.pszUnicodeString = (const char16_t*)(GetDataContentBasePtr() + m_nCurentReadOffset + 1 + nLengthBytes);
 			SkipNextField();
 		}
 		break;
@@ -1741,13 +1793,13 @@ int CSTXProtocol::EnumValues(std::function<void(unsigned char originalType, STXP
 
 			unsigned char nLengthBytes = 0;
 			long nFieldLen = DecodeCompactInteger(GetDataContentBasePtr() + m_nCurentReadOffset + 1, &nLengthBytes);
-			val.cchUnicodeStringLen = nFieldLen / sizeof(wchar_t);
-			val.pszUnicodeString = (const wchar_t*)(GetDataContentBasePtr() + m_nCurentReadOffset + 1 + nLengthBytes);
+			val.cchUnicodeStringLen = nFieldLen / sizeof(char16_t);
+			val.pszUnicodeString = (const char16_t*)(GetDataContentBasePtr() + m_nCurentReadOffset + 1 + nLengthBytes);
 
 			unsigned char nLengthBytes2 = 0;
 			long nFieldLen2 = DecodeCompactInteger(GetDataContentBasePtr() + m_nCurentReadOffset + 1 + nLengthBytes + nFieldLen, &nLengthBytes2);
-			valExtra.cchUnicodeStringLen = nFieldLen2 / sizeof(wchar_t);
-			valExtra.pszUnicodeString = (const wchar_t*)(GetDataContentBasePtr() + m_nCurentReadOffset + 1 + nLengthBytes + nFieldLen + nLengthBytes2);
+			valExtra.cchUnicodeStringLen = nFieldLen2 / sizeof(char16_t);
+			valExtra.pszUnicodeString = (const char16_t*)(GetDataContentBasePtr() + m_nCurentReadOffset + 1 + nLengthBytes + nFieldLen + nLengthBytes2);
 
 			SkipNextField();
 		}
@@ -1846,11 +1898,10 @@ int CSTXProtocol::GetNextUnicodeString(char *lpBuffer, int cchBufferLen )
 		throw std::runtime_error("GetNextUnicodeString(char*,int) : Not enough string data available.");
 		return -1;
 	}
-	const wchar_t* pStrBase = (const wchar_t*)(GetDataContentBasePtr() + m_nCurentReadOffset + 1 + nLengthBytes);
-	int cchStringLen = nStringLen / sizeof(wchar_t);
+	const char16_t* pStrBase = (const char16_t*)(GetDataContentBasePtr() + m_nCurentReadOffset + 1 + nLengthBytes);
+	int cchStringLen = nStringLen / sizeof(char16_t);
 
-	std::wstring_convert<std::codecvt_utf8<wchar_t>> conv;
-	std::string str = conv.to_bytes(pStrBase, pStrBase + cchStringLen);
+	std::string str = CSTXProtocolUtility::UTF16ToUTF8(pStrBase + cchStringLen);
 
 	size_t convertedLen = str.size();
 	if (cchBufferLen < convertedLen + 1)
@@ -1866,12 +1917,12 @@ int CSTXProtocol::GetNextUnicodeString(char *lpBuffer, int cchBufferLen )
 	return convertedLen;
 }
 
-int CSTXProtocol::GetNextUnicodeString(wchar_t *lpBuffer, int cchBufferLen)
+int CSTXProtocol::GetNextUnicodeString(char16_t *lpBuffer, int cchBufferLen)
 {
 	const unsigned char nType = STXPROTOCOL_DATA_TYPE_UNICODE;
 	if (!IsValidDataType(nType))
 	{
-		throw std::runtime_error("GetNextUnicodeString(wchar_t*,int) : Next field is not UTF8/Unicode type.");
+		throw std::runtime_error("GetNextUnicodeString(char16_t*,int) : Next field is not UTF8/Unicode type.");
 		return -1;
 	}
 
@@ -1884,18 +1935,18 @@ int CSTXProtocol::GetNextUnicodeString(wchar_t *lpBuffer, int cchBufferLen)
 
 	if (m_nCurentWriteOffset - m_nCurentReadOffset < nStringLen + nLengthBytes + 1)
 	{
-		throw std::runtime_error("GetNextUnicodeString(wchar_t*,int) : Not enough string data available.");
+		throw std::runtime_error("GetNextUnicodeString(char16_t*,int) : Not enough string data available.");
 		return -1;
 	}
-	const wchar_t* pStrBase = (const wchar_t*)(GetDataContentBasePtr() + m_nCurentReadOffset + 1 + nLengthBytes);
-	int cchStringLen = nStringLen / sizeof(wchar_t);
+	const char16_t* pStrBase = (const char16_t*)(GetDataContentBasePtr() + m_nCurentReadOffset + 1 + nLengthBytes);
+	int cchStringLen = nStringLen / sizeof(char16_t);
 
 	if (cchBufferLen < cchStringLen + 1)
 	{
 		return -1;
 	}
 
-	memcpy(lpBuffer, pStrBase, cchStringLen * sizeof(wchar_t));
+	memcpy(lpBuffer, pStrBase, cchStringLen * sizeof(char16_t));
 	lpBuffer[cchStringLen] = 0;
 
 	SkipNextField();
@@ -1915,7 +1966,7 @@ long CSTXProtocol::AppendDataPair(const char *lpszVal1, const char *lpszVal2)
 	int len1 = strlen(lpszVal1);
 	int len2 = strlen(lpszVal2);
 
-	//std::wstring_convert<std::codecvt_utf8<wchar_t>> conv;
+	//std::wstring_convert<std::codecvt_utf8<char16_t>> conv;
 	//std::wstring str = conv.from_bytes(pStrBase, pStrBase + nLengthBytes);
 
 	//WriteDataType(STXPROTOCOL_DATA_TYPE_UTF8);
@@ -1933,13 +1984,13 @@ long CSTXProtocol::AppendDataPair(const char *lpszVal1, const char *lpszVal2)
 	return nTotalLength;
 }
 
-long CSTXProtocol::AppendDataPair(const wchar_t *lpszVal1, const wchar_t *lpszVal2)
+long CSTXProtocol::AppendDataPair(const char16_t *lpszVal1, const char16_t *lpszVal2)
 {
 	WriteDataType(STXPROTOCOL_DATA_TYPE_UTF8_PAIR);
 	int nTotalLength = 0;
-	std::wstring_convert<std::codecvt_utf8<wchar_t>> conv;
-	std::string str1 = conv.to_bytes(lpszVal1);
-	std::string str2 = conv.to_bytes(lpszVal2);
+
+	std::string str1 = CSTXProtocolUtility::UTF16ToUTF8(lpszVal1);
+	std::string str2 = CSTXProtocolUtility::UTF16ToUTF8(lpszVal2);
 
 	size_t len1 = str1.size();
 	size_t len2 = str2.size();
@@ -1984,14 +2035,12 @@ long CSTXProtocol::AppendDataPair( const char *lpszVal, uint32_t dwVal )
 	return nTotalLength;
 }
 
-long CSTXProtocol::AppendDataPair(const wchar_t *lpszVal, uint32_t dwVal)
+long CSTXProtocol::AppendDataPair(const char16_t *lpszVal, uint32_t dwVal)
 {
 	WriteDataType(STXPROTOCOL_DATA_TYPE_UTF8_DWORD_PAIR);
 	int nTotalLength = 0;
 
-	std::wstring_convert<std::codecvt_utf8<wchar_t>> conv;
-	std::string str1 = conv.to_bytes(lpszVal);
-
+	std::string str1 = CSTXProtocolUtility::UTF16ToUTF8(lpszVal);
 	size_t len1 = str1.size();
 
 	//WriteDataType(STXPROTOCOL_DATA_TYPE_UTF8);
@@ -2028,12 +2077,12 @@ uint32_t CSTXProtocol::GetNextStringPair(char *lpBuffer1, int cchBufferLen1, cha
 	return 0;
 }
 
-uint32_t CSTXProtocol::GetNextStringPair(wchar_t *lpBuffer1, int cchBufferLen1, wchar_t *lpBuffer2, int cchBufferLen2 )
+uint32_t CSTXProtocol::GetNextStringPair(char16_t *lpBuffer1, int cchBufferLen1, char16_t *lpBuffer2, int cchBufferLen2 )
 {
 	const unsigned char nType = STXPROTOCOL_DATA_TYPE_UTF8_PAIR;
 	if(!IsValidDataType(nType))
 	{
-		throw std::runtime_error("GetNextStringPair(wchar_t*,int,wchar_t*,int) : Next field is not String Pair type.");
+		throw std::runtime_error("GetNextStringPair(char16_t*,int,char16_t*,int) : Next field is not String Pair type.");
 		return -1;
 	}
 
@@ -2075,7 +2124,7 @@ int CSTXProtocol::DecodeUTF8String( void *pDataPtr, char *lpBuffer, int cchBuffe
 
 }
 
-int CSTXProtocol::DecodeUTF8String(void *pDataPtr, wchar_t *lpBuffer, int cchBufferLen, int *pOriginalStringPrefixLen, int *pOriginalStringLen)
+int CSTXProtocol::DecodeUTF8String(void *pDataPtr, char16_t *lpBuffer, int cchBufferLen, int *pOriginalStringPrefixLen, int *pOriginalStringLen)
 {
 	unsigned char nLengthBytes = 0;
 	long nStringLen = DecodeCompactInteger(pDataPtr, &nLengthBytes);
@@ -2092,9 +2141,7 @@ int CSTXProtocol::DecodeUTF8String(void *pDataPtr, wchar_t *lpBuffer, int cchBuf
 
 	const char* pStrBase = ((char*)pDataPtr) + nLengthBytes;
 
-
-	std::wstring_convert<std::codecvt_utf8<wchar_t>> conv;
-	std::wstring str1 = conv.from_bytes(pStrBase, pStrBase + nStringLen);
+	std::u16string str1 = CSTXProtocolUtility::UTF8ToUTF16(pStrBase, pStrBase + nStringLen);
 
 	size_t convertedLen = str1.size();
 
@@ -2103,7 +2150,7 @@ int CSTXProtocol::DecodeUTF8String(void *pDataPtr, wchar_t *lpBuffer, int cchBuf
 		return -1;
 	}
 
-	memcpy(lpBuffer, str1.c_str(), convertedLen * sizeof(wchar_t));
+	memcpy(lpBuffer, str1.c_str(), convertedLen * sizeof(char16_t));
 	lpBuffer[convertedLen] = 0;
 
 	return convertedLen;
@@ -2130,25 +2177,24 @@ int CSTXProtocol::DecodeUnicodeString( void *pDataPtr, char *lpBuffer, int cchBu
 		//AssertBreak(_T("DecodeUnicodeString() : Not enough string data available."));
 		return -1;
 	}
-	const wchar_t* pStrBase = (const wchar_t*)((char*)pDataPtr + nLengthBytes);
-	int cchStringLen = nStringLen / sizeof(wchar_t);
+	const char16_t* pStrBase = (const char16_t*)((char*)pDataPtr + nLengthBytes);
+	int cchStringLen = nStringLen / sizeof(char16_t);
 
-	std::wstring_convert<std::codecvt_utf8<wchar_t>> conv;
-	std::string str1 = conv.to_bytes(pStrBase, pStrBase + cchStringLen);
+	std::string str = CSTXProtocolUtility::UTF16ToUTF8(pStrBase, pStrBase + cchStringLen);
 
-	size_t convertedLen = str1.size();
+	size_t convertedLen = str.size();
 	if (cchBufferLen < convertedLen + 1)
 	{
 		return -1;
 	}
 
-	memcpy(lpBuffer, str1.c_str(), convertedLen);
+	memcpy(lpBuffer, str.c_str(), convertedLen);
 	lpBuffer[convertedLen] = 0;
 
 	return convertedLen;
 }
 
-int CSTXProtocol::DecodeUnicodeString(void *pDataPtr, wchar_t *lpBuffer, int cchBufferLen, int *pOriginalStringPrefixLen, int *pOriginalStringLen)
+int CSTXProtocol::DecodeUnicodeString(void *pDataPtr, char16_t *lpBuffer, int cchBufferLen, int *pOriginalStringPrefixLen, int *pOriginalStringLen)
 {
 	unsigned char nLengthBytes = 0;
 	long nStringLen = DecodeCompactInteger(pDataPtr, &nLengthBytes);
@@ -2168,8 +2214,8 @@ int CSTXProtocol::DecodeUnicodeString(void *pDataPtr, wchar_t *lpBuffer, int cch
 		//AssertBreak(_T("DecodeUnicodeString() : Not enough string data available."));
 		return -1;
 	}
-	const wchar_t* pStrBase = (const wchar_t*)((char*)pDataPtr + nLengthBytes);
-	int cchStringLen = nStringLen / sizeof(wchar_t);
+	const char16_t* pStrBase = (const char16_t*)((char*)pDataPtr + nLengthBytes);
+	int cchStringLen = nStringLen / sizeof(char16_t);
 
 	if (cchBufferLen < cchStringLen + 1)
 	{
@@ -2200,7 +2246,7 @@ uint32_t CSTXProtocol::GetNextUnicodeStringPair( char *lpBuffer1, int cchBufferL
 	return 0;
 }
 
-uint32_t CSTXProtocol::GetNextUnicodeStringPair(wchar_t *lpBuffer1, int cchBufferLen1, wchar_t *lpBuffer2, int cchBufferLen2)
+uint32_t CSTXProtocol::GetNextUnicodeStringPair(char16_t *lpBuffer1, int cchBufferLen1, char16_t *lpBuffer2, int cchBufferLen2)
 {
 	const unsigned char nType = STXPROTOCOL_DATA_TYPE_UNICODE_PAIR;
 	if (!IsValidDataType(nType))
@@ -2236,12 +2282,12 @@ uint32_t CSTXProtocol::GetNextStringToDWORDPair( char *lpBuffer, int cchBufferLe
 	return dwValue;
 }
 
-uint32_t CSTXProtocol::GetNextStringToDWORDPair(wchar_t *lpBuffer, int cchBufferLen)
+uint32_t CSTXProtocol::GetNextStringToDWORDPair(char16_t *lpBuffer, int cchBufferLen)
 {
 	const unsigned char nType = STXPROTOCOL_DATA_TYPE_UTF8_DWORD_PAIR;
 	if (!IsValidDataType(nType))
 	{
-		throw std::runtime_error("GetNextStringToDWORDPair(wchar_t*,int) : Next field is not StringToDWord Pair type.");
+		throw std::runtime_error("GetNextStringToDWORDPair(char16_t*,int) : Next field is not StringToDWord Pair type.");
 		return -1;
 	}
 

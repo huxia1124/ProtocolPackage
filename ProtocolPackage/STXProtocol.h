@@ -21,12 +21,16 @@
 #include <string>
 #include <functional>
 
+#ifdef WIN32
+#include <windows.h>
+#else
 typedef struct _GUID {
 	unsigned long  Data1;
 	unsigned short Data2;
 	unsigned short Data3;
 	unsigned char  Data4[8];
 } GUID;
+#endif
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -78,7 +82,7 @@ struct STXPROTOCOLVALUE
 		struct
 		{
 			int cchUnicodeStringLen;
-			const wchar_t* pszUnicodeString;
+			const char16_t* pszUnicodeString;
 		};
 		struct
 		{
@@ -101,20 +105,25 @@ class CSTXProtocolUtility
 public:
 	//UTF8 to char/wchar
 	static int ConvertString(const char* pszUTF8, int cchUTF8, char* pszBuffer, int cchBuffer);
-	static int ConvertString(const char* pszUTF8, int cchUTF8, wchar_t* pszBuffer, int cchBuffer);
-	static int ConvertString(const wchar_t* pszUTF8, int cchUTF8, char* pszBuffer, int cchBuffer);
-	static int ConvertString(const wchar_t* pszUTF8, int cchUTF8, wchar_t* pszBuffer, int cchBuffer);
+	static int ConvertString(const char* pszUTF8, int cchUTF8, char16_t* pszBuffer, int cchBuffer);
+	static int ConvertString(const char16_t* pszUTF8, int cchUTF8, char* pszBuffer, int cchBuffer);
+	static int ConvertString(const char16_t* pszUTF8, int cchUTF8, char16_t* pszBuffer, int cchBuffer);
 
 
-	//static int ConvertString(const wchar_t* pszUnicode, int cchUnicode, LPTSTR pszBuffer, int cchBuffer);
+	//static int ConvertString(const char16_t* pszUnicode, int cchUnicode, LPTSTR pszBuffer, int cchBuffer);
 	static int ConvertStringToUTF8(const char* pszSrc, char *pszBuffer, int cchBuffer);
-	static int ConvertStringToUTF8(const wchar_t* pszSrc, char* pszBuffer, int cchBuffer);
+	static int ConvertStringToUTF8(const char16_t* pszSrc, char* pszBuffer, int cchBuffer);
 
-	static int ConvertStringToUnicode(const char* pszSrc, wchar_t *pszBuffer, int cchBuffer);
-	static int ConvertStringToUnicode(const wchar_t* pszSrc, wchar_t *pszBuffer, int cchBuffer);
+	static int ConvertStringToUnicode(const char* pszSrc, char16_t *pszBuffer, int cchBuffer);
+	static int ConvertStringToUnicode(const char16_t* pszSrc, char16_t *pszBuffer, int cchBuffer);
 
 	static std::string ConvertGUIDToUTF8(GUID *guid);
 	static long ConvertToHexString(unsigned char* lpData, uint32_t cbDataLen, char *lpszHexBuf, bool bUpperCased);
+
+	static std::string UTF16ToUTF8(std::u16string utf16_string);
+	static std::string UTF16ToUTF8(const char16_t *begin, const char16_t *end);
+	static std::u16string UTF8ToUTF16(std::string utf8_string);
+	static std::u16string UTF8ToUTF16(const char *begin, const char *end);
 
 };
 
@@ -129,20 +138,20 @@ public:
 	~CSTXProtocolString();
 
 protected:
-	wchar_t *m_pBuffer;
+	char16_t *m_pBuffer;
 	std::string m_convertedUTF8;
 	int m_cchBufferSize;
 
 protected:
 	void ExpandTo(int cchMax);
 	long ConvertToHexString(unsigned char* lpData, uint32_t cbDataLen, char *lpszHexBuf, bool bUpperCased);
-	long ConvertToHexString(unsigned char* lpData, uint32_t cbDataLen, wchar_t *lpszHexBuf, bool bUpperCased);
+	long ConvertToHexString(unsigned char* lpData, uint32_t cbDataLen, char16_t *lpszHexBuf, bool bUpperCased);
 
 public:
-	operator const wchar_t*();
+	operator const char16_t*();
 	operator const char*();
 
-	wchar_t *GetBuffer(int nBufferLength = 0);		// nBufferLength = 0 : no expand
+	char16_t *GetBuffer(int nBufferLength = 0);		// nBufferLength = 0 : no expand
 	int GetLength();		//in characters
 };
 
@@ -181,9 +190,9 @@ protected:
 	bool SkipTypeIndicator(unsigned char *pTypeSkipped = nullptr);
 	void CheckDataAvailability(unsigned char nType);
 	int DecodeUTF8String(void *pDataPtr, char *lpBuffer, int cchBufferLen, int *pOriginalStringPrefixLen, int *pOriginalStringLen);
-	int DecodeUTF8String(void *pDataPtr, wchar_t *lpBuffer, int cchBufferLen, int *pOriginalStringPrefixLen, int *pOriginalStringLen);
+	int DecodeUTF8String(void *pDataPtr, char16_t *lpBuffer, int cchBufferLen, int *pOriginalStringPrefixLen, int *pOriginalStringLen);
 	int DecodeUnicodeString(void *pDataPtr, char *lpBuffer, int cchBufferLen, int *pOriginalStringPrefixLen, int *pOriginalStringLen);
-	int DecodeUnicodeString(void *pDataPtr, wchar_t *lpBuffer, int cchBufferLen, int *pOriginalStringPrefixLen, int *pOriginalStringLen);
+	int DecodeUnicodeString(void *pDataPtr, char16_t *lpBuffer, int cchBufferLen, int *pOriginalStringPrefixLen, int *pOriginalStringLen);
 	bool DecodeEmbeddedObject(void *pData, long *pDataReadLen);
 
 	static char EncryptByte(char data, char key);
@@ -200,21 +209,21 @@ public:
 	long AppendData(int64_t val);
 	long AppendData(char *lpszVal);		//Always convert and append as UTF8 string
 	long AppendData(const char *lpszVal);		//Always convert and append as UTF8 string
-	long AppendData(wchar_t *lpszVal);		//Always convert and append as UTF8 string
-	long AppendData(const wchar_t *lpszVal);		//Always convert and append as UTF8 string
+	long AppendData(char16_t *lpszVal);		//Always convert and append as UTF8 string
+	long AppendData(const char16_t *lpszVal);		//Always convert and append as UTF8 string
 	long AppendData(float val);
 	long AppendData(double val);
 	long AppendData(GUID &val);
 	long AppendData(CSTXProtocol *pVal);	//Object
 	long AppendRawData(void *pData, long cbDataLen);
 	long AppendUnicodeString(const char* lpszVal);								//Append as Unicode string
-	long AppendUnicodeString(const wchar_t* lpszVal);								//Append as Unicode string
+	long AppendUnicodeString(const char16_t* lpszVal);								//Append as Unicode string
 	long AppendUnicodeStringPair(const char* lpszVal1, const char* lpszVal2);		//Append as Unicode string
-	long AppendUnicodeStringPair(const wchar_t* lpszVal1, const wchar_t* lpszVal2);		//Append as Unicode string
+	long AppendUnicodeStringPair(const char16_t* lpszVal1, const char16_t* lpszVal2);		//Append as Unicode string
 	long AppendDataPair(const char *lpszVal1, const char *lpszVal2);				//Always convert and append as UTF8 pair
-	long AppendDataPair(const wchar_t *lpszVal1, const wchar_t *lpszVal2);				//Always convert and append as UTF8 pair
+	long AppendDataPair(const char16_t *lpszVal1, const char16_t *lpszVal2);				//Always convert and append as UTF8 pair
 	long AppendDataPair(const char *lpszVal, uint32_t dwVal);						//UTF8-uint32_t pair
-	long AppendDataPair(const wchar_t *lpszVal, uint32_t dwVal);						//UTF8-uint32_t pair
+	long AppendDataPair(const char16_t *lpszVal, uint32_t dwVal);						//UTF8-uint32_t pair
 
 	// the length of the prefix and all content (prefix + CRC + content)
 	long GetDataLen();
@@ -230,6 +239,7 @@ public:
 
 	//pData : address of the pure data (address of length-prefix)
 	//pDataReadLen [out, opt] : data length parsed
+	//return: 0 if success, non-zero otherwise
 	int Decode(void *pData, long *pDataReadLen);
 	int Decode(void *pData, long *pDataReadLen, long cbInputDataLen);
 	int DecodeWithDecrypt(void *pData, long *pDataReadLen, uint32_t dwKey);
@@ -243,22 +253,22 @@ public:
 	GUID GetNextGUID();
 	CSTXProtocol* GetNextObject();
 	int GetNextString(char *lpBuffer, int cchBufferLen);
-	int GetNextString(wchar_t *lpBuffer, int cchBufferLen);
+	int GetNextString(char16_t *lpBuffer, int cchBufferLen);
 	std::string GetNextString();
 	bool GetNextString(CSTXProtocolString *pString);
 	int GetNextUnicodeString(char *lpBuffer, int cchBufferLen);
-	int GetNextUnicodeString(wchar_t *lpBuffer, int cchBufferLen);
+	int GetNextUnicodeString(char16_t *lpBuffer, int cchBufferLen);
 	bool GetNextUnicodeString(CSTXProtocolString *pString);
-	std::wstring GetNextUnicodeString();
+	std::u16string GetNextUnicodeString();
 	int GetNextRawData(void *pBuffer, int cbBufferSize);
 	uint32_t GetNextStringPair(char *lpBuffer1, int cchBufferLen1, char *lpBuffer2, int cchBufferLen2);
-	uint32_t GetNextStringPair(wchar_t *lpBuffer1, int cchBufferLen1, wchar_t *lpBuffer2, int cchBufferLen2);
+	uint32_t GetNextStringPair(char16_t *lpBuffer1, int cchBufferLen1, char16_t *lpBuffer2, int cchBufferLen2);
 
 	uint32_t GetNextUnicodeStringPair(char *lpBuffer1, int cchBufferLen1, char *lpBuffer2, int cchBufferLen2);
-	uint32_t GetNextUnicodeStringPair(wchar_t *lpBuffer1, int cchBufferLen1, wchar_t *lpBuffer2, int cchBufferLen2);
+	uint32_t GetNextUnicodeStringPair(char16_t *lpBuffer1, int cchBufferLen1, char16_t *lpBuffer2, int cchBufferLen2);
 
 	uint32_t GetNextStringToDWORDPair(char *lpBuffer, int cchBufferLen);
-	uint32_t GetNextStringToDWORDPair(wchar_t *lpBuffer, int cchBufferLen);
+	uint32_t GetNextStringToDWORDPair(char16_t *lpBuffer, int cchBufferLen);
 
 	int EnumValues(std::function<void (unsigned char originalType, STXPROTOCOLVALUE *pVal, STXPROTOCOLVALUE *pValExtra, void *pUserData)> pfnEnum, void *pUserData);
 

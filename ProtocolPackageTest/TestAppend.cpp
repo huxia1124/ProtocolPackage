@@ -74,7 +74,7 @@ namespace ProtocolPackageTest
 			Assert::AreEqual(expectLength, proStrings.GetDataLen());
 
 			//Add Unicode string as UTF8 'Hello Kitty', Type + lenthPrefix + content[11]
-			proStrings.AppendData("Hello Kitty");
+			proStrings.AppendData(u"Hello Kitty");
 			expectLength += 13;
 			Assert::AreEqual(expectLength, proStrings.GetDataLen());
 
@@ -84,7 +84,7 @@ namespace ProtocolPackageTest
 			Assert::AreEqual(expectLength, proStrings.GetDataLen());
 
 			//Add as Unicode string 'Hello', Type + lenthPrefix + content[10]
-			proStrings.AppendUnicodeString(L"World");
+			proStrings.AppendUnicodeString(u"World");
 			expectLength += 12;
 			Assert::AreEqual(expectLength, proStrings.GetDataLen());
 		}
@@ -120,7 +120,7 @@ namespace ProtocolPackageTest
 			Assert::AreEqual(expectLength, proPairs.GetDataLen());	
 
 			//Add Unicode string pair 'Hello'/'World' but stored as UTF8 string pair, Type + lenthPrefix1 + content1[5] + lenthPrefix2 + content2[5]
-			proPairs.AppendDataPair(L"Hello", L"Kitty");
+			proPairs.AppendDataPair(u"Hello", u"Kitty");
 			expectLength += 13;
 			Assert::AreEqual(expectLength, proPairs.GetDataLen());
 		
@@ -130,7 +130,7 @@ namespace ProtocolPackageTest
 			Assert::AreEqual(expectLength, proPairs.GetDataLen());
 
 			//Add pair string/DWORD 'Hi there'/1921, Type + lenthPrefix1 + content1[8] + DWORD[4]
-			proPairs.AppendDataPair(L"Hi there", 1921);
+			proPairs.AppendDataPair(u"Hi there", 1921);
 			expectLength += 14;
 			Assert::AreEqual(expectLength, proPairs.GetDataLen());
 
@@ -196,13 +196,13 @@ namespace ProtocolPackageTest
 			pro.AppendData((int64_t)64);
 			pro.AppendData((uint16_t)16);
 			pro.AppendData((unsigned char)'C');
-			pro.AppendUnicodeString(L"Unicode");
-			pro.AppendUnicodeString(L"UnicodeString2");
+			pro.AppendUnicodeString(u"Unicode");
+			pro.AppendUnicodeString(u"UnicodeString2");
 			pro.AppendData(guid);
 			*/
-			pro.AppendDataPair(L"Data1", 1024);
+			pro.AppendDataPair(u"Data1", 1024);
 			pro.AppendData(&proEmbedded);
-			//pro.AppendUnicodeStringPair(L"UPKey1", L"UPValue1");
+			//pro.AppendUnicodeStringPair(u"UPKey1", u"UPValue1");
 			pro.AppendDataPair("Data2", 2048);
 
 			pro.SeekReadToBegin();

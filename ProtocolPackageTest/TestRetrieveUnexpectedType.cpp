@@ -42,12 +42,12 @@ namespace ProtocolPackageTest
 			Assert::ExpectException<std::runtime_error>([&] {proPrimitives.GetNextGUID(); });
 			Assert::ExpectException<std::runtime_error>([&] {proPrimitives.GetNextObject(); });
 			Assert::ExpectException<std::runtime_error>([&] {char buf[32];  proPrimitives.GetNextRawData((void*)buf, 32); });
-			Assert::ExpectException<std::runtime_error>([&] {wchar_t buf1[32] = { 0 }; wchar_t buf2[32] = { 0 }; proPrimitives.GetNextStringPair(buf1, 32, buf2, 32); });
+			Assert::ExpectException<std::runtime_error>([&] {char16_t buf1[32] = { 0 }; char16_t buf2[32] = { 0 }; proPrimitives.GetNextStringPair(buf1, 32, buf2, 32); });
 			Assert::ExpectException<std::runtime_error>([&] {char buf1[32] = { 0 }; char buf2[32] = { 0 }; proPrimitives.GetNextStringPair(buf1, 32, buf2, 32); });
-			Assert::ExpectException<std::runtime_error>([&] {wchar_t buf1[32] = { 0 }; wchar_t buf2[32] = { 0 }; proPrimitives.GetNextUnicodeStringPair(buf1, 32, buf2, 32); });
+			Assert::ExpectException<std::runtime_error>([&] {char16_t buf1[32] = { 0 }; char16_t buf2[32] = { 0 }; proPrimitives.GetNextUnicodeStringPair(buf1, 32, buf2, 32); });
 			Assert::ExpectException<std::runtime_error>([&] {char buf1[32] = { 0 }; char buf2[32] = { 0 }; proPrimitives.GetNextUnicodeStringPair(buf1, 32, buf2, 32); });
 			Assert::ExpectException<std::runtime_error>([&] {char buf1[32] = { 0 }; proPrimitives.GetNextUnicodeString(buf1, 32); });
-			Assert::ExpectException<std::runtime_error>([&] {wchar_t buf1[32] = { 0 }; proPrimitives.GetNextUnicodeString(buf1, 32); });
+			Assert::ExpectException<std::runtime_error>([&] {char16_t buf1[32] = { 0 }; proPrimitives.GetNextUnicodeString(buf1, 32); });
 			Assert::ExpectException<std::runtime_error>([&] {proPrimitives.GetNextUnicodeString(); });
 			Assert::ExpectException<std::runtime_error>([&] {CSTXProtocolString s; proPrimitives.GetNextUnicodeString(&s); });
 			Assert::ExpectException<std::runtime_error>([&] {CSTXProtocolString s; proPrimitives.GetNextString(&s); });
@@ -64,12 +64,12 @@ namespace ProtocolPackageTest
 			Assert::ExpectException<std::runtime_error>([&] {proPrimitives.GetNextGUID(); });
 			Assert::ExpectException<std::runtime_error>([&] {proPrimitives.GetNextObject(); });
 			Assert::ExpectException<std::runtime_error>([&] {char buf[32];  proPrimitives.GetNextRawData((void*)buf, 32); });
-			Assert::ExpectException<std::runtime_error>([&] {wchar_t buf1[32] = { 0 }; wchar_t buf2[32] = { 0 }; proPrimitives.GetNextStringPair(buf1, 32, buf2, 32); });
+			Assert::ExpectException<std::runtime_error>([&] {char16_t buf1[32] = { 0 }; char16_t buf2[32] = { 0 }; proPrimitives.GetNextStringPair(buf1, 32, buf2, 32); });
 			Assert::ExpectException<std::runtime_error>([&] {char buf1[32] = { 0 }; char buf2[32] = { 0 }; proPrimitives.GetNextStringPair(buf1, 32, buf2, 32); });
-			Assert::ExpectException<std::runtime_error>([&] {wchar_t buf1[32] = { 0 }; wchar_t buf2[32] = { 0 }; proPrimitives.GetNextUnicodeStringPair(buf1, 32, buf2, 32); });
+			Assert::ExpectException<std::runtime_error>([&] {char16_t buf1[32] = { 0 }; char16_t buf2[32] = { 0 }; proPrimitives.GetNextUnicodeStringPair(buf1, 32, buf2, 32); });
 			Assert::ExpectException<std::runtime_error>([&] {char buf1[32] = { 0 }; char buf2[32] = { 0 }; proPrimitives.GetNextUnicodeStringPair(buf1, 32, buf2, 32); });
 			Assert::ExpectException<std::runtime_error>([&] {char buf1[32] = { 0 }; proPrimitives.GetNextUnicodeString(buf1, 32); });
-			Assert::ExpectException<std::runtime_error>([&] {wchar_t buf1[32] = { 0 }; proPrimitives.GetNextUnicodeString(buf1, 32); });
+			Assert::ExpectException<std::runtime_error>([&] {char16_t buf1[32] = { 0 }; proPrimitives.GetNextUnicodeString(buf1, 32); });
 			Assert::ExpectException<std::runtime_error>([&] {proPrimitives.GetNextUnicodeString(); });
 			Assert::ExpectException<std::runtime_error>([&] {CSTXProtocolString s; proPrimitives.GetNextUnicodeString(&s); });
 			Assert::ExpectException<std::runtime_error>([&] {CSTXProtocolString s; proPrimitives.GetNextString(&s); });
@@ -86,12 +86,12 @@ namespace ProtocolPackageTest
 			Assert::ExpectException<std::runtime_error>([&] {proPrimitives.GetNextGUID(); });
 			Assert::ExpectException<std::runtime_error>([&] {proPrimitives.GetNextObject(); });
 			Assert::ExpectException<std::runtime_error>([&] {char buf[32];  proPrimitives.GetNextRawData((void*)buf, 32); });
-			Assert::ExpectException<std::runtime_error>([&] {wchar_t buf1[32] = { 0 }; wchar_t buf2[32] = { 0 }; proPrimitives.GetNextStringPair(buf1, 32, buf2, 32); });
+			Assert::ExpectException<std::runtime_error>([&] {char16_t buf1[32] = { 0 }; char16_t buf2[32] = { 0 }; proPrimitives.GetNextStringPair(buf1, 32, buf2, 32); });
 			Assert::ExpectException<std::runtime_error>([&] {char buf1[32] = { 0 }; char buf2[32] = { 0 }; proPrimitives.GetNextStringPair(buf1, 32, buf2, 32); });
-			Assert::ExpectException<std::runtime_error>([&] {wchar_t buf1[32] = { 0 }; wchar_t buf2[32] = { 0 }; proPrimitives.GetNextUnicodeStringPair(buf1, 32, buf2, 32); });
+			Assert::ExpectException<std::runtime_error>([&] {char16_t buf1[32] = { 0 }; char16_t buf2[32] = { 0 }; proPrimitives.GetNextUnicodeStringPair(buf1, 32, buf2, 32); });
 			Assert::ExpectException<std::runtime_error>([&] {char buf1[32] = { 0 }; char buf2[32] = { 0 }; proPrimitives.GetNextUnicodeStringPair(buf1, 32, buf2, 32); });
 			Assert::ExpectException<std::runtime_error>([&] {char buf1[32] = { 0 }; proPrimitives.GetNextUnicodeString(buf1, 32); });
-			Assert::ExpectException<std::runtime_error>([&] {wchar_t buf1[32] = { 0 }; proPrimitives.GetNextUnicodeString(buf1, 32); });
+			Assert::ExpectException<std::runtime_error>([&] {char16_t buf1[32] = { 0 }; proPrimitives.GetNextUnicodeString(buf1, 32); });
 			Assert::ExpectException<std::runtime_error>([&] {proPrimitives.GetNextUnicodeString(); });
 			Assert::ExpectException<std::runtime_error>([&] {CSTXProtocolString s; proPrimitives.GetNextUnicodeString(&s); });
 			Assert::ExpectException<std::runtime_error>([&] {CSTXProtocolString s; proPrimitives.GetNextString(&s); });
@@ -108,12 +108,12 @@ namespace ProtocolPackageTest
 			Assert::ExpectException<std::runtime_error>([&] {proPrimitives.GetNextGUID(); });
 			Assert::ExpectException<std::runtime_error>([&] {proPrimitives.GetNextObject(); });
 			Assert::ExpectException<std::runtime_error>([&] {char buf[32];  proPrimitives.GetNextRawData((void*)buf, 32); });
-			Assert::ExpectException<std::runtime_error>([&] {wchar_t buf1[32] = { 0 }; wchar_t buf2[32] = { 0 }; proPrimitives.GetNextStringPair(buf1, 32, buf2, 32); });
+			Assert::ExpectException<std::runtime_error>([&] {char16_t buf1[32] = { 0 }; char16_t buf2[32] = { 0 }; proPrimitives.GetNextStringPair(buf1, 32, buf2, 32); });
 			Assert::ExpectException<std::runtime_error>([&] {char buf1[32] = { 0 }; char buf2[32] = { 0 }; proPrimitives.GetNextStringPair(buf1, 32, buf2, 32); });
-			Assert::ExpectException<std::runtime_error>([&] {wchar_t buf1[32] = { 0 }; wchar_t buf2[32] = { 0 }; proPrimitives.GetNextUnicodeStringPair(buf1, 32, buf2, 32); });
+			Assert::ExpectException<std::runtime_error>([&] {char16_t buf1[32] = { 0 }; char16_t buf2[32] = { 0 }; proPrimitives.GetNextUnicodeStringPair(buf1, 32, buf2, 32); });
 			Assert::ExpectException<std::runtime_error>([&] {char buf1[32] = { 0 }; char buf2[32] = { 0 }; proPrimitives.GetNextUnicodeStringPair(buf1, 32, buf2, 32); });
 			Assert::ExpectException<std::runtime_error>([&] {char buf1[32] = { 0 }; proPrimitives.GetNextUnicodeString(buf1, 32); });
-			Assert::ExpectException<std::runtime_error>([&] {wchar_t buf1[32] = { 0 }; proPrimitives.GetNextUnicodeString(buf1, 32); });
+			Assert::ExpectException<std::runtime_error>([&] {char16_t buf1[32] = { 0 }; proPrimitives.GetNextUnicodeString(buf1, 32); });
 			Assert::ExpectException<std::runtime_error>([&] {proPrimitives.GetNextUnicodeString(); });
 			Assert::ExpectException<std::runtime_error>([&] {CSTXProtocolString s; proPrimitives.GetNextUnicodeString(&s); });
 			Assert::ExpectException<std::runtime_error>([&] {CSTXProtocolString s; proPrimitives.GetNextString(&s); });
@@ -130,12 +130,12 @@ namespace ProtocolPackageTest
 			Assert::ExpectException<std::runtime_error>([&] {proPrimitives.GetNextGUID(); });
 			Assert::ExpectException<std::runtime_error>([&] {proPrimitives.GetNextObject(); });
 			Assert::ExpectException<std::runtime_error>([&] {char buf[32];  proPrimitives.GetNextRawData((void*)buf, 32); });
-			Assert::ExpectException<std::runtime_error>([&] {wchar_t buf1[32] = { 0 }; wchar_t buf2[32] = { 0 }; proPrimitives.GetNextStringPair(buf1, 32, buf2, 32); });
+			Assert::ExpectException<std::runtime_error>([&] {char16_t buf1[32] = { 0 }; char16_t buf2[32] = { 0 }; proPrimitives.GetNextStringPair(buf1, 32, buf2, 32); });
 			Assert::ExpectException<std::runtime_error>([&] {char buf1[32] = { 0 }; char buf2[32] = { 0 }; proPrimitives.GetNextStringPair(buf1, 32, buf2, 32); });
-			Assert::ExpectException<std::runtime_error>([&] {wchar_t buf1[32] = { 0 }; wchar_t buf2[32] = { 0 }; proPrimitives.GetNextUnicodeStringPair(buf1, 32, buf2, 32); });
+			Assert::ExpectException<std::runtime_error>([&] {char16_t buf1[32] = { 0 }; char16_t buf2[32] = { 0 }; proPrimitives.GetNextUnicodeStringPair(buf1, 32, buf2, 32); });
 			Assert::ExpectException<std::runtime_error>([&] {char buf1[32] = { 0 }; char buf2[32] = { 0 }; proPrimitives.GetNextUnicodeStringPair(buf1, 32, buf2, 32); });
 			Assert::ExpectException<std::runtime_error>([&] {char buf1[32] = { 0 }; proPrimitives.GetNextUnicodeString(buf1, 32); });
-			Assert::ExpectException<std::runtime_error>([&] {wchar_t buf1[32] = { 0 }; proPrimitives.GetNextUnicodeString(buf1, 32); });
+			Assert::ExpectException<std::runtime_error>([&] {char16_t buf1[32] = { 0 }; proPrimitives.GetNextUnicodeString(buf1, 32); });
 			Assert::ExpectException<std::runtime_error>([&] {proPrimitives.GetNextUnicodeString(); });
 			Assert::ExpectException<std::runtime_error>([&] {CSTXProtocolString s; proPrimitives.GetNextUnicodeString(&s); });
 			Assert::ExpectException<std::runtime_error>([&] {CSTXProtocolString s; proPrimitives.GetNextString(&s); });
@@ -153,12 +153,12 @@ namespace ProtocolPackageTest
 			Assert::ExpectException<std::runtime_error>([&] {proPrimitives.GetNextGUID(); });
 			Assert::ExpectException<std::runtime_error>([&] {proPrimitives.GetNextObject(); });
 			Assert::ExpectException<std::runtime_error>([&] {char buf[32];  proPrimitives.GetNextRawData((void*)buf, 32); });
-			Assert::ExpectException<std::runtime_error>([&] {wchar_t buf1[32] = { 0 }; wchar_t buf2[32] = { 0 }; proPrimitives.GetNextStringPair(buf1, 32, buf2, 32); });
+			Assert::ExpectException<std::runtime_error>([&] {char16_t buf1[32] = { 0 }; char16_t buf2[32] = { 0 }; proPrimitives.GetNextStringPair(buf1, 32, buf2, 32); });
 			Assert::ExpectException<std::runtime_error>([&] {char buf1[32] = { 0 }; char buf2[32] = { 0 }; proPrimitives.GetNextStringPair(buf1, 32, buf2, 32); });
-			Assert::ExpectException<std::runtime_error>([&] {wchar_t buf1[32] = { 0 }; wchar_t buf2[32] = { 0 }; proPrimitives.GetNextUnicodeStringPair(buf1, 32, buf2, 32); });
+			Assert::ExpectException<std::runtime_error>([&] {char16_t buf1[32] = { 0 }; char16_t buf2[32] = { 0 }; proPrimitives.GetNextUnicodeStringPair(buf1, 32, buf2, 32); });
 			Assert::ExpectException<std::runtime_error>([&] {char buf1[32] = { 0 }; char buf2[32] = { 0 }; proPrimitives.GetNextUnicodeStringPair(buf1, 32, buf2, 32); });
 			Assert::ExpectException<std::runtime_error>([&] {char buf1[32] = { 0 }; proPrimitives.GetNextUnicodeString(buf1, 32); });
-			Assert::ExpectException<std::runtime_error>([&] {wchar_t buf1[32] = { 0 }; proPrimitives.GetNextUnicodeString(buf1, 32); });
+			Assert::ExpectException<std::runtime_error>([&] {char16_t buf1[32] = { 0 }; proPrimitives.GetNextUnicodeString(buf1, 32); });
 			Assert::ExpectException<std::runtime_error>([&] {proPrimitives.GetNextUnicodeString(); });
 			Assert::ExpectException<std::runtime_error>([&] {CSTXProtocolString s; proPrimitives.GetNextUnicodeString(&s); });
 			Assert::ExpectException<std::runtime_error>([&] {CSTXProtocolString s; proPrimitives.GetNextString(&s); });
@@ -173,7 +173,7 @@ namespace ProtocolPackageTest
 			CSTXProtocol proStrings;
 			proStrings.AppendData("Hello World");
 			proStrings.AppendData("Hello Kitty");
-			proStrings.AppendUnicodeString(L"World");
+			proStrings.AppendUnicodeString(u"World");
 
 			Assert::ExpectException<std::runtime_error>([&] {proStrings.GetNextByte(); });
 			Assert::ExpectException<std::runtime_error>([&] {proStrings.GetNextDWORD(); });
@@ -183,9 +183,9 @@ namespace ProtocolPackageTest
 			Assert::ExpectException<std::runtime_error>([&] {proStrings.GetNextGUID(); });
 			Assert::ExpectException<std::runtime_error>([&] {proStrings.GetNextObject(); });
 			Assert::ExpectException<std::runtime_error>([&] {char buf[32];  proStrings.GetNextRawData((void*)buf, 32); });
-			Assert::ExpectException<std::runtime_error>([&] {wchar_t buf1[32] = { 0 }; wchar_t buf2[32] = { 0 }; proStrings.GetNextStringPair(buf1, 32, buf2, 32); });
+			Assert::ExpectException<std::runtime_error>([&] {char16_t buf1[32] = { 0 }; char16_t buf2[32] = { 0 }; proStrings.GetNextStringPair(buf1, 32, buf2, 32); });
 			Assert::ExpectException<std::runtime_error>([&] {char buf1[32] = { 0 }; char buf2[32] = { 0 }; proStrings.GetNextStringPair(buf1, 32, buf2, 32); });
-			Assert::ExpectException<std::runtime_error>([&] {wchar_t buf1[32] = { 0 }; wchar_t buf2[32] = { 0 }; proStrings.GetNextUnicodeStringPair(buf1, 32, buf2, 32); });
+			Assert::ExpectException<std::runtime_error>([&] {char16_t buf1[32] = { 0 }; char16_t buf2[32] = { 0 }; proStrings.GetNextUnicodeStringPair(buf1, 32, buf2, 32); });
 			Assert::ExpectException<std::runtime_error>([&] {char buf1[32] = { 0 }; char buf2[32] = { 0 }; proStrings.GetNextUnicodeStringPair(buf1, 32, buf2, 32); });
 			Assert::ExpectException<std::runtime_error>([&] {char buf1[32] = { 0 }; proStrings.GetNextStringToDWORDPair(buf1, 32); });
 
@@ -199,9 +199,9 @@ namespace ProtocolPackageTest
 			Assert::ExpectException<std::runtime_error>([&] {proStrings.GetNextGUID(); });
 			Assert::ExpectException<std::runtime_error>([&] {proStrings.GetNextObject(); });
 			Assert::ExpectException<std::runtime_error>([&] {char buf[32];  proStrings.GetNextRawData((void*)buf, 32); });
-			Assert::ExpectException<std::runtime_error>([&] {wchar_t buf1[32] = { 0 }; wchar_t buf2[32] = { 0 }; proStrings.GetNextStringPair(buf1, 32, buf2, 32); });
+			Assert::ExpectException<std::runtime_error>([&] {char16_t buf1[32] = { 0 }; char16_t buf2[32] = { 0 }; proStrings.GetNextStringPair(buf1, 32, buf2, 32); });
 			Assert::ExpectException<std::runtime_error>([&] {char buf1[32] = { 0 }; char buf2[32] = { 0 }; proStrings.GetNextStringPair(buf1, 32, buf2, 32); });
-			Assert::ExpectException<std::runtime_error>([&] {wchar_t buf1[32] = { 0 }; wchar_t buf2[32] = { 0 }; proStrings.GetNextUnicodeStringPair(buf1, 32, buf2, 32); });
+			Assert::ExpectException<std::runtime_error>([&] {char16_t buf1[32] = { 0 }; char16_t buf2[32] = { 0 }; proStrings.GetNextUnicodeStringPair(buf1, 32, buf2, 32); });
 			Assert::ExpectException<std::runtime_error>([&] {char buf1[32] = { 0 }; char buf2[32] = { 0 }; proStrings.GetNextUnicodeStringPair(buf1, 32, buf2, 32); });
 			Assert::ExpectException<std::runtime_error>([&] {char buf1[32] = { 0 }; proStrings.GetNextStringToDWORDPair(buf1, 32); });
 
@@ -215,9 +215,9 @@ namespace ProtocolPackageTest
 			Assert::ExpectException<std::runtime_error>([&] {proStrings.GetNextGUID(); });
 			Assert::ExpectException<std::runtime_error>([&] {proStrings.GetNextObject(); });
 			Assert::ExpectException<std::runtime_error>([&] {char buf[32];  proStrings.GetNextRawData((void*)buf, 32); });
-			Assert::ExpectException<std::runtime_error>([&] {wchar_t buf1[32] = { 0 }; wchar_t buf2[32] = { 0 }; proStrings.GetNextStringPair(buf1, 32, buf2, 32); });
+			Assert::ExpectException<std::runtime_error>([&] {char16_t buf1[32] = { 0 }; char16_t buf2[32] = { 0 }; proStrings.GetNextStringPair(buf1, 32, buf2, 32); });
 			Assert::ExpectException<std::runtime_error>([&] {char buf1[32] = { 0 }; char buf2[32] = { 0 }; proStrings.GetNextStringPair(buf1, 32, buf2, 32); });
-			Assert::ExpectException<std::runtime_error>([&] {wchar_t buf1[32] = { 0 }; wchar_t buf2[32] = { 0 }; proStrings.GetNextUnicodeStringPair(buf1, 32, buf2, 32); });
+			Assert::ExpectException<std::runtime_error>([&] {char16_t buf1[32] = { 0 }; char16_t buf2[32] = { 0 }; proStrings.GetNextUnicodeStringPair(buf1, 32, buf2, 32); });
 			Assert::ExpectException<std::runtime_error>([&] {char buf1[32] = { 0 }; char buf2[32] = { 0 }; proStrings.GetNextUnicodeStringPair(buf1, 32, buf2, 32); });
 			Assert::ExpectException<std::runtime_error>([&] {char buf1[32] = { 0 }; proStrings.GetNextStringToDWORDPair(buf1, 32); });
 
@@ -227,9 +227,9 @@ namespace ProtocolPackageTest
 		{
 			CSTXProtocol proPairs;
 			proPairs.AppendDataPair("Hello", "World");
-			proPairs.AppendDataPair(L"Hello", L"Kitty");
+			proPairs.AppendDataPair(u"Hello", u"Kitty");
 			proPairs.AppendDataPair("Hello", 1024);
-			proPairs.AppendDataPair(L"Hi there", 1921);
+			proPairs.AppendDataPair(u"Hi there", 1921);
 			proPairs.AppendUnicodeStringPair("Go", "Home");
 
 			Assert::ExpectException<std::runtime_error>([&] {proPairs.GetNextWORD(); });
@@ -242,7 +242,7 @@ namespace ProtocolPackageTest
 			Assert::ExpectException<std::runtime_error>([&] {proPairs.GetNextObject(); });
 			Assert::ExpectException<std::runtime_error>([&] {char buf[32];  proPairs.GetNextRawData((void*)buf, 32); });
 			Assert::ExpectException<std::runtime_error>([&] {char buf1[32] = { 0 }; proPairs.GetNextUnicodeString(buf1, 32); });
-			Assert::ExpectException<std::runtime_error>([&] {wchar_t buf1[32] = { 0 }; proPairs.GetNextUnicodeString(buf1, 32); });
+			Assert::ExpectException<std::runtime_error>([&] {char16_t buf1[32] = { 0 }; proPairs.GetNextUnicodeString(buf1, 32); });
 			Assert::ExpectException<std::runtime_error>([&] {proPairs.GetNextUnicodeString(); });
 			Assert::ExpectException<std::runtime_error>([&] {CSTXProtocolString s; proPairs.GetNextUnicodeString(&s); });
 			Assert::ExpectException<std::runtime_error>([&] {CSTXProtocolString s; proPairs.GetNextString(&s); });
@@ -260,7 +260,7 @@ namespace ProtocolPackageTest
 			Assert::ExpectException<std::runtime_error>([&] {proPairs.GetNextObject(); });
 			Assert::ExpectException<std::runtime_error>([&] {char buf[32];  proPairs.GetNextRawData((void*)buf, 32); });
 			Assert::ExpectException<std::runtime_error>([&] {char buf1[32] = { 0 }; proPairs.GetNextUnicodeString(buf1, 32); });
-			Assert::ExpectException<std::runtime_error>([&] {wchar_t buf1[32] = { 0 }; proPairs.GetNextUnicodeString(buf1, 32); });
+			Assert::ExpectException<std::runtime_error>([&] {char16_t buf1[32] = { 0 }; proPairs.GetNextUnicodeString(buf1, 32); });
 			Assert::ExpectException<std::runtime_error>([&] {proPairs.GetNextUnicodeString(); });
 			Assert::ExpectException<std::runtime_error>([&] {CSTXProtocolString s; proPairs.GetNextUnicodeString(&s); });
 			Assert::ExpectException<std::runtime_error>([&] {CSTXProtocolString s; proPairs.GetNextString(&s); });
@@ -278,13 +278,13 @@ namespace ProtocolPackageTest
 			Assert::ExpectException<std::runtime_error>([&] {proPairs.GetNextObject(); });
 			Assert::ExpectException<std::runtime_error>([&] {char buf[32];  proPairs.GetNextRawData((void*)buf, 32); });
 			Assert::ExpectException<std::runtime_error>([&] {char buf1[32] = { 0 }; proPairs.GetNextUnicodeString(buf1, 32); });
-			Assert::ExpectException<std::runtime_error>([&] {wchar_t buf1[32] = { 0 }; proPairs.GetNextUnicodeString(buf1, 32); });
+			Assert::ExpectException<std::runtime_error>([&] {char16_t buf1[32] = { 0 }; proPairs.GetNextUnicodeString(buf1, 32); });
 			Assert::ExpectException<std::runtime_error>([&] {proPairs.GetNextUnicodeString(); });
 			Assert::ExpectException<std::runtime_error>([&] {CSTXProtocolString s; proPairs.GetNextUnicodeString(&s); });
 			Assert::ExpectException<std::runtime_error>([&] {CSTXProtocolString s; proPairs.GetNextString(&s); });
-			Assert::ExpectException<std::runtime_error>([&] {wchar_t buf1[32] = { 0 }; wchar_t buf2[32] = { 0 }; proPairs.GetNextStringPair(buf1, 32, buf2, 32); });
+			Assert::ExpectException<std::runtime_error>([&] {char16_t buf1[32] = { 0 }; char16_t buf2[32] = { 0 }; proPairs.GetNextStringPair(buf1, 32, buf2, 32); });
 			Assert::ExpectException<std::runtime_error>([&] {char buf1[32] = { 0 }; char buf2[32] = { 0 }; proPairs.GetNextStringPair(buf1, 32, buf2, 32); });
-			Assert::ExpectException<std::runtime_error>([&] {wchar_t buf1[32] = { 0 }; wchar_t buf2[32] = { 0 }; proPairs.GetNextUnicodeStringPair(buf1, 32, buf2, 32); });
+			Assert::ExpectException<std::runtime_error>([&] {char16_t buf1[32] = { 0 }; char16_t buf2[32] = { 0 }; proPairs.GetNextUnicodeStringPair(buf1, 32, buf2, 32); });
 			Assert::ExpectException<std::runtime_error>([&] {char buf1[32] = { 0 }; char buf2[32] = { 0 }; proPairs.GetNextUnicodeStringPair(buf1, 32, buf2, 32); });
 
 			proPairs.SkipNextField();
@@ -299,13 +299,13 @@ namespace ProtocolPackageTest
 			Assert::ExpectException<std::runtime_error>([&] {proPairs.GetNextObject(); });
 			Assert::ExpectException<std::runtime_error>([&] {char buf[32];  proPairs.GetNextRawData((void*)buf, 32); });
 			Assert::ExpectException<std::runtime_error>([&] {char buf1[32] = { 0 }; proPairs.GetNextUnicodeString(buf1, 32); });
-			Assert::ExpectException<std::runtime_error>([&] {wchar_t buf1[32] = { 0 }; proPairs.GetNextUnicodeString(buf1, 32); });
+			Assert::ExpectException<std::runtime_error>([&] {char16_t buf1[32] = { 0 }; proPairs.GetNextUnicodeString(buf1, 32); });
 			Assert::ExpectException<std::runtime_error>([&] {proPairs.GetNextUnicodeString(); });
 			Assert::ExpectException<std::runtime_error>([&] {CSTXProtocolString s; proPairs.GetNextUnicodeString(&s); });
 			Assert::ExpectException<std::runtime_error>([&] {CSTXProtocolString s; proPairs.GetNextString(&s); });
-			Assert::ExpectException<std::runtime_error>([&] {wchar_t buf1[32] = { 0 }; wchar_t buf2[32] = { 0 }; proPairs.GetNextStringPair(buf1, 32, buf2, 32); });
+			Assert::ExpectException<std::runtime_error>([&] {char16_t buf1[32] = { 0 }; char16_t buf2[32] = { 0 }; proPairs.GetNextStringPair(buf1, 32, buf2, 32); });
 			Assert::ExpectException<std::runtime_error>([&] {char buf1[32] = { 0 }; char buf2[32] = { 0 }; proPairs.GetNextStringPair(buf1, 32, buf2, 32); });
-			Assert::ExpectException<std::runtime_error>([&] {wchar_t buf1[32] = { 0 }; wchar_t buf2[32] = { 0 }; proPairs.GetNextUnicodeStringPair(buf1, 32, buf2, 32); });
+			Assert::ExpectException<std::runtime_error>([&] {char16_t buf1[32] = { 0 }; char16_t buf2[32] = { 0 }; proPairs.GetNextUnicodeStringPair(buf1, 32, buf2, 32); });
 			Assert::ExpectException<std::runtime_error>([&] {char buf1[32] = { 0 }; char buf2[32] = { 0 }; proPairs.GetNextUnicodeStringPair(buf1, 32, buf2, 32); });
 
 			proPairs.SkipNextField();
@@ -320,7 +320,7 @@ namespace ProtocolPackageTest
 			Assert::ExpectException<std::runtime_error>([&] {proPairs.GetNextObject(); });
 			Assert::ExpectException<std::runtime_error>([&] {char buf[32];  proPairs.GetNextRawData((void*)buf, 32); });
 			Assert::ExpectException<std::runtime_error>([&] {char buf1[32] = { 0 }; proPairs.GetNextUnicodeString(buf1, 32); });
-			Assert::ExpectException<std::runtime_error>([&] {wchar_t buf1[32] = { 0 }; proPairs.GetNextUnicodeString(buf1, 32); });
+			Assert::ExpectException<std::runtime_error>([&] {char16_t buf1[32] = { 0 }; proPairs.GetNextUnicodeString(buf1, 32); });
 			Assert::ExpectException<std::runtime_error>([&] {proPairs.GetNextUnicodeString(); });
 			Assert::ExpectException<std::runtime_error>([&] {CSTXProtocolString s; proPairs.GetNextUnicodeString(&s); });
 			Assert::ExpectException<std::runtime_error>([&] {CSTXProtocolString s; proPairs.GetNextString(&s); });
@@ -345,12 +345,12 @@ namespace ProtocolPackageTest
 			Assert::ExpectException<std::runtime_error>([&] {proRaws.GetNextString(); });
 			Assert::ExpectException<std::runtime_error>([&] {proRaws.GetNextGUID(); });
 			Assert::ExpectException<std::runtime_error>([&] {proRaws.GetNextObject(); });
-			Assert::ExpectException<std::runtime_error>([&] {wchar_t buf1[32] = { 0 }; wchar_t buf2[32] = { 0 }; proRaws.GetNextStringPair(buf1, 32, buf2, 32); });
+			Assert::ExpectException<std::runtime_error>([&] {char16_t buf1[32] = { 0 }; char16_t buf2[32] = { 0 }; proRaws.GetNextStringPair(buf1, 32, buf2, 32); });
 			Assert::ExpectException<std::runtime_error>([&] {char buf1[32] = { 0 }; char buf2[32] = { 0 }; proRaws.GetNextStringPair(buf1, 32, buf2, 32); });
-			Assert::ExpectException<std::runtime_error>([&] {wchar_t buf1[32] = { 0 }; wchar_t buf2[32] = { 0 }; proRaws.GetNextUnicodeStringPair(buf1, 32, buf2, 32); });
+			Assert::ExpectException<std::runtime_error>([&] {char16_t buf1[32] = { 0 }; char16_t buf2[32] = { 0 }; proRaws.GetNextUnicodeStringPair(buf1, 32, buf2, 32); });
 			Assert::ExpectException<std::runtime_error>([&] {char buf1[32] = { 0 }; char buf2[32] = { 0 }; proRaws.GetNextUnicodeStringPair(buf1, 32, buf2, 32); });
 			Assert::ExpectException<std::runtime_error>([&] {char buf1[32] = { 0 }; proRaws.GetNextUnicodeString(buf1, 32); });
-			Assert::ExpectException<std::runtime_error>([&] {wchar_t buf1[32] = { 0 }; proRaws.GetNextUnicodeString(buf1, 32); });
+			Assert::ExpectException<std::runtime_error>([&] {char16_t buf1[32] = { 0 }; proRaws.GetNextUnicodeString(buf1, 32); });
 			Assert::ExpectException<std::runtime_error>([&] {proRaws.GetNextUnicodeString(); });
 			Assert::ExpectException<std::runtime_error>([&] {CSTXProtocolString s; proRaws.GetNextUnicodeString(&s); });
 			Assert::ExpectException<std::runtime_error>([&] {CSTXProtocolString s; proRaws.GetNextString(&s); });
@@ -367,12 +367,12 @@ namespace ProtocolPackageTest
 			Assert::ExpectException<std::runtime_error>([&] {proRaws.GetNextString(); });
 			Assert::ExpectException<std::runtime_error>([&] {proRaws.GetNextGUID(); });
 			Assert::ExpectException<std::runtime_error>([&] {proRaws.GetNextObject(); });
-			Assert::ExpectException<std::runtime_error>([&] {wchar_t buf1[32] = { 0 }; wchar_t buf2[32] = { 0 }; proRaws.GetNextStringPair(buf1, 32, buf2, 32); });
+			Assert::ExpectException<std::runtime_error>([&] {char16_t buf1[32] = { 0 }; char16_t buf2[32] = { 0 }; proRaws.GetNextStringPair(buf1, 32, buf2, 32); });
 			Assert::ExpectException<std::runtime_error>([&] {char buf1[32] = { 0 }; char buf2[32] = { 0 }; proRaws.GetNextStringPair(buf1, 32, buf2, 32); });
-			Assert::ExpectException<std::runtime_error>([&] {wchar_t buf1[32] = { 0 }; wchar_t buf2[32] = { 0 }; proRaws.GetNextUnicodeStringPair(buf1, 32, buf2, 32); });
+			Assert::ExpectException<std::runtime_error>([&] {char16_t buf1[32] = { 0 }; char16_t buf2[32] = { 0 }; proRaws.GetNextUnicodeStringPair(buf1, 32, buf2, 32); });
 			Assert::ExpectException<std::runtime_error>([&] {char buf1[32] = { 0 }; char buf2[32] = { 0 }; proRaws.GetNextUnicodeStringPair(buf1, 32, buf2, 32); });
 			Assert::ExpectException<std::runtime_error>([&] {char buf1[32] = { 0 }; proRaws.GetNextUnicodeString(buf1, 32); });
-			Assert::ExpectException<std::runtime_error>([&] {wchar_t buf1[32] = { 0 }; proRaws.GetNextUnicodeString(buf1, 32); });
+			Assert::ExpectException<std::runtime_error>([&] {char16_t buf1[32] = { 0 }; proRaws.GetNextUnicodeString(buf1, 32); });
 			Assert::ExpectException<std::runtime_error>([&] {proRaws.GetNextUnicodeString(); });
 			Assert::ExpectException<std::runtime_error>([&] {CSTXProtocolString s; proRaws.GetNextUnicodeString(&s); });
 			Assert::ExpectException<std::runtime_error>([&] {CSTXProtocolString s; proRaws.GetNextString(&s); });
@@ -389,12 +389,12 @@ namespace ProtocolPackageTest
 			Assert::ExpectException<std::runtime_error>([&] {proRaws.GetNextString(); });
 			Assert::ExpectException<std::runtime_error>([&] {proRaws.GetNextGUID(); });
 			Assert::ExpectException<std::runtime_error>([&] {proRaws.GetNextObject(); });
-			Assert::ExpectException<std::runtime_error>([&] {wchar_t buf1[32] = { 0 }; wchar_t buf2[32] = { 0 }; proRaws.GetNextStringPair(buf1, 32, buf2, 32); });
+			Assert::ExpectException<std::runtime_error>([&] {char16_t buf1[32] = { 0 }; char16_t buf2[32] = { 0 }; proRaws.GetNextStringPair(buf1, 32, buf2, 32); });
 			Assert::ExpectException<std::runtime_error>([&] {char buf1[32] = { 0 }; char buf2[32] = { 0 }; proRaws.GetNextStringPair(buf1, 32, buf2, 32); });
-			Assert::ExpectException<std::runtime_error>([&] {wchar_t buf1[32] = { 0 }; wchar_t buf2[32] = { 0 }; proRaws.GetNextUnicodeStringPair(buf1, 32, buf2, 32); });
+			Assert::ExpectException<std::runtime_error>([&] {char16_t buf1[32] = { 0 }; char16_t buf2[32] = { 0 }; proRaws.GetNextUnicodeStringPair(buf1, 32, buf2, 32); });
 			Assert::ExpectException<std::runtime_error>([&] {char buf1[32] = { 0 }; char buf2[32] = { 0 }; proRaws.GetNextUnicodeStringPair(buf1, 32, buf2, 32); });
 			Assert::ExpectException<std::runtime_error>([&] {char buf1[32] = { 0 }; proRaws.GetNextUnicodeString(buf1, 32); });
-			Assert::ExpectException<std::runtime_error>([&] {wchar_t buf1[32] = { 0 }; proRaws.GetNextUnicodeString(buf1, 32); });
+			Assert::ExpectException<std::runtime_error>([&] {char16_t buf1[32] = { 0 }; proRaws.GetNextUnicodeString(buf1, 32); });
 			Assert::ExpectException<std::runtime_error>([&] {proRaws.GetNextUnicodeString(); });
 			Assert::ExpectException<std::runtime_error>([&] {CSTXProtocolString s; proRaws.GetNextUnicodeString(&s); });
 			Assert::ExpectException<std::runtime_error>([&] {CSTXProtocolString s; proRaws.GetNextString(&s); });
@@ -416,12 +416,12 @@ namespace ProtocolPackageTest
 			Assert::ExpectException<std::runtime_error>([&] {proGUID.GetNextString(); });
 			Assert::ExpectException<std::runtime_error>([&] {proGUID.GetNextObject(); });
 			Assert::ExpectException<std::runtime_error>([&] {char buf[32];  proGUID.GetNextRawData((void*)buf, 32); });
-			Assert::ExpectException<std::runtime_error>([&] {wchar_t buf1[32] = { 0 }; wchar_t buf2[32] = { 0 }; proGUID.GetNextStringPair(buf1, 32, buf2, 32); });
+			Assert::ExpectException<std::runtime_error>([&] {char16_t buf1[32] = { 0 }; char16_t buf2[32] = { 0 }; proGUID.GetNextStringPair(buf1, 32, buf2, 32); });
 			Assert::ExpectException<std::runtime_error>([&] {char buf1[32] = { 0 }; char buf2[32] = { 0 }; proGUID.GetNextStringPair(buf1, 32, buf2, 32); });
-			Assert::ExpectException<std::runtime_error>([&] {wchar_t buf1[32] = { 0 }; wchar_t buf2[32] = { 0 }; proGUID.GetNextUnicodeStringPair(buf1, 32, buf2, 32); });
+			Assert::ExpectException<std::runtime_error>([&] {char16_t buf1[32] = { 0 }; char16_t buf2[32] = { 0 }; proGUID.GetNextUnicodeStringPair(buf1, 32, buf2, 32); });
 			Assert::ExpectException<std::runtime_error>([&] {char buf1[32] = { 0 }; char buf2[32] = { 0 }; proGUID.GetNextUnicodeStringPair(buf1, 32, buf2, 32); });
 			Assert::ExpectException<std::runtime_error>([&] {char buf1[32] = { 0 }; proGUID.GetNextUnicodeString(buf1, 32); });
-			Assert::ExpectException<std::runtime_error>([&] {wchar_t buf1[32] = { 0 }; proGUID.GetNextUnicodeString(buf1, 32); });
+			Assert::ExpectException<std::runtime_error>([&] {char16_t buf1[32] = { 0 }; proGUID.GetNextUnicodeString(buf1, 32); });
 			Assert::ExpectException<std::runtime_error>([&] {proGUID.GetNextUnicodeString(); });
 			Assert::ExpectException<std::runtime_error>([&] {CSTXProtocolString s; proGUID.GetNextUnicodeString(&s); });
 			Assert::ExpectException<std::runtime_error>([&] {CSTXProtocolString s; proGUID.GetNextString(&s); });
