@@ -25,9 +25,6 @@
 #include <iomanip>
 #include <algorithm>
 
-#pragma warning(disable:4996)
-
-
 #define STXPROTOCOL_INITIAL_BUFFER_SIZE				256
 #define STXPROTOCOL_INITIAL_BUFFER_PREFIX_SIZE		16
 #define STXPROTOCOL_INITIAL_STRING_SIZE				256
