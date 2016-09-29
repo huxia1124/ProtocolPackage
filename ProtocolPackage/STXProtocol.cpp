@@ -1651,17 +1651,19 @@ int CSTXProtocol::GetNextFieldLength()
 	return -1;
 }
 
-int CSTXProtocol::EnumValues( STXProtocolEnumFunc pfnEnum, void *pUserData )
+int CSTXProtocol::EnumValues(std::function<void(unsigned char originalType, STXPROTOCOLVALUE *pVal, STXPROTOCOLVALUE *pValExtra, void *pUserData)> pfnEnum, void *pUserData)
 {
 	int nValEnumCount = 0;
 	STXPROTOCOLVALUE val;
 	STXPROTOCOLVALUE valExtra;
 	//valExtra.nValueType = STXPROTOCOL_DATA_TYPE_INVALID;
-	while(IsDataAvailable())
+	unsigned char originalType = STXPROTOCOL_DATA_TYPE_INVALID;
+	while (IsDataAvailable())
 	{
 		val.nValueType = GetNextFieldType();
 		valExtra.nValueType = STXPROTOCOL_DATA_TYPE_INVALID;
-		switch(val.nValueType)
+		unsigned char originalType = val.nValueType;
+		switch (val.nValueType)
 		{
 		case STXPROTOCOL_DATA_TYPE_BYTE:
 			val.byteVal = GetNextByte();
@@ -1685,91 +1687,91 @@ int CSTXProtocol::EnumValues( STXProtocolEnumFunc pfnEnum, void *pUserData )
 			val.guidVal = GetNextGUID();
 			break;
 		case STXPROTOCOL_DATA_TYPE_UTF8:
-			{
-				unsigned char nLengthBytes = 0;
-				long nFieldLen = DecodeCompactInteger(GetDataContentBasePtr() + m_nCurentReadOffset + 1, &nLengthBytes);
-				val.cchUTF8StringLen = nFieldLen;
-				val.pszUTF8String = (const char*)(GetDataContentBasePtr() + m_nCurentReadOffset + 1 + nLengthBytes);
-				SkipNextField();
-			}
-			break;
+		{
+			unsigned char nLengthBytes = 0;
+			long nFieldLen = DecodeCompactInteger(GetDataContentBasePtr() + m_nCurentReadOffset + 1, &nLengthBytes);
+			val.cchUTF8StringLen = nFieldLen;
+			val.pszUTF8String = (const char*)(GetDataContentBasePtr() + m_nCurentReadOffset + 1 + nLengthBytes);
+			SkipNextField();
+		}
+		break;
 		case STXPROTOCOL_DATA_TYPE_OBJECT:
-			{
-				val.pObject = GetNextObject();
-			}
-			break;
+		{
+			val.pObject = GetNextObject();
+		}
+		break;
 		case STXPROTOCOL_DATA_TYPE_RAW:
-			{
-				unsigned char nLengthBytes = 0;
-				long nFieldLen = DecodeCompactInteger(GetDataContentBasePtr() + m_nCurentReadOffset + 1, &nLengthBytes);
-				val.cbDataLen = nFieldLen;
-				val.pDataPtr = (void*)(GetDataContentBasePtr() + m_nCurentReadOffset + 1 + nLengthBytes);
-				SkipNextField();
-			}
-			break;
+		{
+			unsigned char nLengthBytes = 0;
+			long nFieldLen = DecodeCompactInteger(GetDataContentBasePtr() + m_nCurentReadOffset + 1, &nLengthBytes);
+			val.cbDataLen = nFieldLen;
+			val.pDataPtr = (void*)(GetDataContentBasePtr() + m_nCurentReadOffset + 1 + nLengthBytes);
+			SkipNextField();
+		}
+		break;
 		case STXPROTOCOL_DATA_TYPE_UNICODE:
-			{
-				unsigned char nLengthBytes = 0;
-				long nFieldLen = DecodeCompactInteger(GetDataContentBasePtr() + m_nCurentReadOffset + 1, &nLengthBytes);
-				val.cchUnicodeStringLen = nFieldLen / sizeof(wchar_t);
-				val.pszUnicodeString = (const wchar_t*)(GetDataContentBasePtr() + m_nCurentReadOffset + 1 + nLengthBytes);
-				SkipNextField();
-			}
-			break;
+		{
+			unsigned char nLengthBytes = 0;
+			long nFieldLen = DecodeCompactInteger(GetDataContentBasePtr() + m_nCurentReadOffset + 1, &nLengthBytes);
+			val.cchUnicodeStringLen = nFieldLen / sizeof(wchar_t);
+			val.pszUnicodeString = (const wchar_t*)(GetDataContentBasePtr() + m_nCurentReadOffset + 1 + nLengthBytes);
+			SkipNextField();
+		}
+		break;
 		case STXPROTOCOL_DATA_TYPE_UTF8_PAIR:
-			{
-				valExtra.nValueType = val.nValueType;
+		{
+			valExtra.nValueType = val.nValueType;
 
-				unsigned char nLengthBytes = 0;
-				long nFieldLen = DecodeCompactInteger(GetDataContentBasePtr() + m_nCurentReadOffset + 1, &nLengthBytes);
-				val.cchUTF8StringLen = nFieldLen;
-				val.pszUTF8String = (const char*)(GetDataContentBasePtr() + m_nCurentReadOffset + 1 + nLengthBytes);
+			unsigned char nLengthBytes = 0;
+			long nFieldLen = DecodeCompactInteger(GetDataContentBasePtr() + m_nCurentReadOffset + 1, &nLengthBytes);
+			val.cchUTF8StringLen = nFieldLen;
+			val.pszUTF8String = (const char*)(GetDataContentBasePtr() + m_nCurentReadOffset + 1 + nLengthBytes);
 
-				unsigned char nLengthBytes2 = 0;
-				long nFieldLen2 = DecodeCompactInteger(GetDataContentBasePtr() + m_nCurentReadOffset + 1 + nLengthBytes + nFieldLen, &nLengthBytes2);
-				valExtra.cchUTF8StringLen = nFieldLen2;
-				valExtra.pszUTF8String = (const char*)(GetDataContentBasePtr() + m_nCurentReadOffset + 1 + nLengthBytes + nFieldLen + nLengthBytes2);
+			unsigned char nLengthBytes2 = 0;
+			long nFieldLen2 = DecodeCompactInteger(GetDataContentBasePtr() + m_nCurentReadOffset + 1 + nLengthBytes + nFieldLen, &nLengthBytes2);
+			valExtra.cchUTF8StringLen = nFieldLen2;
+			valExtra.pszUTF8String = (const char*)(GetDataContentBasePtr() + m_nCurentReadOffset + 1 + nLengthBytes + nFieldLen + nLengthBytes2);
 
-				SkipNextField();
-			}
-			break;
+			SkipNextField();
+		}
+		break;
 		case STXPROTOCOL_DATA_TYPE_UNICODE_PAIR:
-			{
-				valExtra.nValueType = val.nValueType;
+		{
+			valExtra.nValueType = val.nValueType;
 
-				unsigned char nLengthBytes = 0;
-				long nFieldLen = DecodeCompactInteger(GetDataContentBasePtr() + m_nCurentReadOffset + 1, &nLengthBytes);
-				val.cchUnicodeStringLen = nFieldLen / sizeof(wchar_t);
-				val.pszUnicodeString = (const wchar_t*)(GetDataContentBasePtr() + m_nCurentReadOffset + 1 + nLengthBytes);
+			unsigned char nLengthBytes = 0;
+			long nFieldLen = DecodeCompactInteger(GetDataContentBasePtr() + m_nCurentReadOffset + 1, &nLengthBytes);
+			val.cchUnicodeStringLen = nFieldLen / sizeof(wchar_t);
+			val.pszUnicodeString = (const wchar_t*)(GetDataContentBasePtr() + m_nCurentReadOffset + 1 + nLengthBytes);
 
-				unsigned char nLengthBytes2 = 0;
-				long nFieldLen2 = DecodeCompactInteger(GetDataContentBasePtr() + m_nCurentReadOffset + 1 + nLengthBytes + nFieldLen, &nLengthBytes2);
-				valExtra.cchUnicodeStringLen = nFieldLen2 / sizeof(wchar_t);
-				valExtra.pszUnicodeString = (const wchar_t*)(GetDataContentBasePtr() + m_nCurentReadOffset + 1 + nLengthBytes + nFieldLen + nLengthBytes2);
+			unsigned char nLengthBytes2 = 0;
+			long nFieldLen2 = DecodeCompactInteger(GetDataContentBasePtr() + m_nCurentReadOffset + 1 + nLengthBytes + nFieldLen, &nLengthBytes2);
+			valExtra.cchUnicodeStringLen = nFieldLen2 / sizeof(wchar_t);
+			valExtra.pszUnicodeString = (const wchar_t*)(GetDataContentBasePtr() + m_nCurentReadOffset + 1 + nLengthBytes + nFieldLen + nLengthBytes2);
 
-				SkipNextField();
-			}
-			break;
+			SkipNextField();
+		}
+		break;
 		case STXPROTOCOL_DATA_TYPE_UTF8_DWORD_PAIR:
-			{
-				val.nValueType = STXPROTOCOL_DATA_TYPE_UTF8;
-				valExtra.nValueType = STXPROTOCOL_DATA_TYPE_DWORD;
+		{
+			val.nValueType = STXPROTOCOL_DATA_TYPE_UTF8;
+			valExtra.nValueType = STXPROTOCOL_DATA_TYPE_DWORD;
 
-				unsigned char nLengthBytes = 0;
-				long nFieldLen = DecodeCompactInteger(GetDataContentBasePtr() + m_nCurentReadOffset + 1, &nLengthBytes);
-				val.cchUTF8StringLen = nFieldLen;
-				val.pszUTF8String = (const char*)(GetDataContentBasePtr() + m_nCurentReadOffset + 1 + nLengthBytes);
+			unsigned char nLengthBytes = 0;
+			long nFieldLen = DecodeCompactInteger(GetDataContentBasePtr() + m_nCurentReadOffset + 1, &nLengthBytes);
+			val.cchUTF8StringLen = nFieldLen;
+			val.pszUTF8String = (const char*)(GetDataContentBasePtr() + m_nCurentReadOffset + 1 + nLengthBytes);
 
-				valExtra.dwVal = *((uint32_t*)(GetDataContentBasePtr() + m_nCurentReadOffset + 1 + nLengthBytes + nFieldLen));
+			valExtra.dwVal = *((uint32_t*)(GetDataContentBasePtr() + m_nCurentReadOffset + 1 + nLengthBytes + nFieldLen));
 
-				SkipNextField();
-			}
-			break;
+			SkipNextField();
+		}
+		break;
 		}
 
-		pfnEnum(&val, &valExtra, pUserData);
+		pfnEnum(originalType, &val, &valExtra, pUserData);
 
-		if(val.nValueType == STXPROTOCOL_DATA_TYPE_OBJECT && val.pObject)
+		if (val.nValueType == STXPROTOCOL_DATA_TYPE_OBJECT && val.pObject)
 			delete val.pObject;
 
 		nValEnumCount++;

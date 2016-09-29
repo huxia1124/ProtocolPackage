@@ -19,6 +19,7 @@
 
 #include <cstdint>
 #include <string>
+#include <functional>
 
 typedef struct _GUID {
 	unsigned long  Data1;
@@ -32,6 +33,7 @@ typedef struct _GUID {
 #define STXPROTOCOL_DATA_TYPE_FLAG_LENGTH_PREFIX	0x80
 #define STXPROTOCOL_DATA_TYPE_FLAG_SECOND_PREFIX	0x40
 #define STXPROTOCOL_DATA_TYPE_FLAG_PAIR				0x20
+
 #define STXPROTOCOL_DATA_TYPE_INVALID				0
 #define STXPROTOCOL_DATA_TYPE_BYTE					1
 #define STXPROTOCOL_DATA_TYPE_WORD					2
@@ -218,6 +220,7 @@ public:
 	long GetDataLen();
 
 	// The address of the length-prefix (This is the address of all valid data: prefix + CRC + content)
+	// When the data size increases, the base pointer might change.
 	void* GetBasePtr();
 
 	// The address of the CRC byte.
@@ -257,138 +260,7 @@ public:
 	uint32_t GetNextStringToDWORDPair(char *lpBuffer, int cchBufferLen);
 	uint32_t GetNextStringToDWORDPair(wchar_t *lpBuffer, int cchBufferLen);
 
-	int EnumValues(STXProtocolEnumFunc pfnEnum, void *pUserData);
-
-	template<typename T>
-	int EnumValues(T pfnEnum, void *pUserData)
-	{
-		int nValEnumCount = 0;
-		STXPROTOCOLVALUE val;
-		STXPROTOCOLVALUE valExtra;
-		//valExtra.nValueType = STXPROTOCOL_DATA_TYPE_INVALID;
-		while (IsDataAvailable())
-		{
-			val.nValueType = GetNextFieldType();
-			valExtra.nValueType = STXPROTOCOL_DATA_TYPE_INVALID;
-			switch (val.nValueType)
-			{
-			case STXPROTOCOL_DATA_TYPE_BYTE:
-				val.byteVal = GetNextByte();
-				break;
-			case STXPROTOCOL_DATA_TYPE_WORD:
-				val.wVal = GetNextWORD();
-				break;
-			case STXPROTOCOL_DATA_TYPE_DWORD:
-				val.dwVal = GetNextDWORD();
-				break;
-			case STXPROTOCOL_DATA_TYPE_I64:
-				val.nVal64 = GetNextI64();
-				break;
-			case STXPROTOCOL_DATA_TYPE_FLOAT:
-				val.floatVal = GetNextFloat();
-				break;
-			case STXPROTOCOL_DATA_TYPE_DOUBLE:
-				val.doubleVal = GetNextDouble();
-				break;
-			case STXPROTOCOL_DATA_TYPE_GUID:
-				val.guidVal = GetNextGUID();
-				break;
-			case STXPROTOCOL_DATA_TYPE_UTF8:
-			{
-				unsigned char nLengthBytes = 0;
-				long nFieldLen = DecodeCompactInteger(GetDataContentBasePtr() + m_nCurentReadOffset + 1, &nLengthBytes);
-				val.cchUTF8StringLen = nFieldLen;
-				val.pszUTF8String = (const char*)(GetDataContentBasePtr() + m_nCurentReadOffset + 1 + nLengthBytes);
-				SkipNextField();
-			}
-			break;
-			case STXPROTOCOL_DATA_TYPE_OBJECT:
-			{
-				val.pObject = GetNextObject();
-			}
-			break;
-			case STXPROTOCOL_DATA_TYPE_RAW:
-			{
-				unsigned char nLengthBytes = 0;
-				long nFieldLen = DecodeCompactInteger(GetDataContentBasePtr() + m_nCurentReadOffset + 1, &nLengthBytes);
-				val.cbDataLen = nFieldLen;
-				val.pDataPtr = (void*)(GetDataContentBasePtr() + m_nCurentReadOffset + 1 + nLengthBytes);
-				SkipNextField();
-			}
-			break;
-			case STXPROTOCOL_DATA_TYPE_UNICODE:
-			{
-				unsigned char nLengthBytes = 0;
-				long nFieldLen = DecodeCompactInteger(GetDataContentBasePtr() + m_nCurentReadOffset + 1, &nLengthBytes);
-				val.cchUnicodeStringLen = nFieldLen / sizeof(wchar_t);
-				val.pszUnicodeString = (const wchar_t*)(GetDataContentBasePtr() + m_nCurentReadOffset + 1 + nLengthBytes);
-				SkipNextField();
-			}
-			break;
-			case STXPROTOCOL_DATA_TYPE_UTF8_PAIR:
-			{
-				valExtra.nValueType = val.nValueType;
-
-				unsigned char nLengthBytes = 0;
-				long nFieldLen = DecodeCompactInteger(GetDataContentBasePtr() + m_nCurentReadOffset + 1, &nLengthBytes);
-				val.cchUTF8StringLen = nFieldLen;
-				val.pszUTF8String = (const char*)(GetDataContentBasePtr() + m_nCurentReadOffset + 1 + nLengthBytes);
-
-				unsigned char nLengthBytes2 = 0;
-				long nFieldLen2 = DecodeCompactInteger(GetDataContentBasePtr() + m_nCurentReadOffset + 1 + nLengthBytes + nFieldLen, &nLengthBytes2);
-				valExtra.cchUTF8StringLen = nFieldLen2;
-				valExtra.pszUTF8String = (const char*)(GetDataContentBasePtr() + m_nCurentReadOffset + 1 + nLengthBytes + nFieldLen + nLengthBytes2);
-
-				SkipNextField();
-			}
-			break;
-			case STXPROTOCOL_DATA_TYPE_UNICODE_PAIR:
-			{
-				valExtra.nValueType = val.nValueType;
-
-				unsigned char nLengthBytes = 0;
-				long nFieldLen = DecodeCompactInteger(GetDataContentBasePtr() + m_nCurentReadOffset + 1, &nLengthBytes);
-				val.cchUnicodeStringLen = nFieldLen / sizeof(wchar_t);
-				val.pszUnicodeString = (const wchar_t*)(GetDataContentBasePtr() + m_nCurentReadOffset + 1 + nLengthBytes);
-
-				unsigned char nLengthBytes2 = 0;
-				long nFieldLen2 = DecodeCompactInteger(GetDataContentBasePtr() + m_nCurentReadOffset + 1 + nLengthBytes + nFieldLen, &nLengthBytes2);
-				valExtra.cchUnicodeStringLen = nFieldLen2 / sizeof(wchar_t);
-				valExtra.pszUnicodeString = (const wchar_t*)(GetDataContentBasePtr() + m_nCurentReadOffset + 1 + nLengthBytes + nFieldLen + nLengthBytes2);
-
-				SkipNextField();
-			}
-			break;
-			case STXPROTOCOL_DATA_TYPE_UTF8_DWORD_PAIR:
-			{
-				val.nValueType = STXPROTOCOL_DATA_TYPE_UTF8;
-				valExtra.nValueType = STXPROTOCOL_DATA_TYPE_DWORD;
-
-				unsigned char nLengthBytes = 0;
-				long nFieldLen = DecodeCompactInteger(GetDataContentBasePtr() + m_nCurentReadOffset + 1, &nLengthBytes);
-				val.cchUTF8StringLen = nFieldLen;
-				val.pszUTF8String = (const char*)(GetDataContentBasePtr() + m_nCurentReadOffset + 1 + nLengthBytes);
-
-				valExtra.dwVal = *((uint32_t*)(GetDataContentBasePtr() + m_nCurentReadOffset + 1 + nLengthBytes + nFieldLen));
-
-				SkipNextField();
-			}
-			break;
-			default:
-				//Unknown field type
-				//AssertBreak(_T("EnumValues() : Unknown field type"));
-				;
-			}
-
-			pfnEnum(&val, &valExtra, pUserData);
-
-			if (val.nValueType == STXPROTOCOL_DATA_TYPE_OBJECT && val.pObject)
-				delete val.pObject;
-
-			nValEnumCount++;
-		}
-		return nValEnumCount;
-	}
+	int EnumValues(std::function<void (unsigned char originalType, STXPROTOCOLVALUE *pVal, STXPROTOCOLVALUE *pValExtra, void *pUserData)> pfnEnum, void *pUserData);
 
 	void SkipNextField();
 	bool IsDataAvailable();

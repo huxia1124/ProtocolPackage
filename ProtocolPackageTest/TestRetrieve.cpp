@@ -33,6 +33,7 @@ namespace ProtocolPackageTest
 			proPrimitives.AppendData((float)123.32);
 			proPrimitives.AppendData((double)3291.876);
 
+			Assert::IsTrue(proPrimitives.GetNextFieldType() == STXPROTOCOL_DATA_TYPE_WORD);
 			Assert::IsTrue(uint16_t(123) == proPrimitives.GetNextWORD());
 			Assert::IsTrue((unsigned char)254 == proPrimitives.GetNextByte());
 			Assert::IsTrue((uint32_t)175553337 == proPrimitives.GetNextDWORD());
