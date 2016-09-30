@@ -103,11 +103,21 @@ namespace ProtocolPackageTest
 				p.GetEncryptedData(pData, len, key);
 				Assert::AreNotEqual(0, memcmp(p.GetBasePtr(), pData, p.GetDataLen()));
 
+				long dataLen = 0;
 				CSTXProtocol pd;
-				pd.DecodeWithDecrypt(pData, nullptr, key);
+				pd.DecodeWithDecrypt(pData, &dataLen, key);
 
 				Assert::IsTrue(p.GetDataLen() == pd.GetDataLen());
 				Assert::AreEqual(0, memcmp(p.GetBasePtr(), pd.GetBasePtr(), p.GetDataLen()));
+			}
+
+			uint32_t key2 = 0xADE34B90;
+			p.GetEncryptedData(pData, len, key2);
+
+			for (uint32_t i = key2 - 128; i < key2 + 128; i++)
+			{
+				if(i != key2)
+					Assert::ExpectException<std::runtime_error>([&] {CSTXProtocol pd2; pd2.DecodeWithDecrypt(pData, nullptr, key2 + 1); });
 			}
 
 			delete[]pData;

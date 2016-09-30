@@ -1009,14 +1009,14 @@ int CSTXProtocol::DecodeWithDecrypt(void * pData, long * pDataReadLen, uint32_t 
 		r += *((char*)(pszData + i));
 	}
 	char crc = (char)((r % 256) & 0xFF);
-	pszData[0] = crc;
+	char desired_crc = DecryptByte(pszData[0], k);
 
-	if (((char)(r & 0xFF)) != crc)
+	if (crc != desired_crc)
 	{
-		//AssertBreak(_T("DecodeWithDecrypt() : Error parsing package, CRC mismatch."));
+		throw std::runtime_error("DecodeWithDecrypt(void*,long*,uint32_t) : Error parsing package, CRC mismatch.");
 		return 8;	//Error parsing package, CRC mismatch 
 	}
-
+	pszData[0] = crc;
 
 	return Decode(pData, pDataReadLen);
 }
