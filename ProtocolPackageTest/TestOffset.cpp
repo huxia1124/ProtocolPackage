@@ -27,9 +27,9 @@ namespace ProtocolPackageTest
 			CSTXProtocol p;
 
 			long offset1 = 0;
-			p.AppendData(0, &offset1);
+			p.AppendData((uint32_t)0, &offset1);
 			long offset2 = 0;
-			p.AppendData(100, &offset2);
+			p.AppendData((uint32_t)100, &offset2);
 
 			p.IncreaseDWORDAtOffset(offset1, 1);
 			Assert::AreEqual((uint32_t)1, p.GetDWORDAtOffset(offset1));
@@ -54,12 +54,15 @@ namespace ProtocolPackageTest
 
 			Assert::ExpectException<std::runtime_error>([&] {p.GetDWORDAtOffset(offset2 + sizeof(uint32_t)); });
 			Assert::ExpectException<std::runtime_error>([&] {p.DecreaseDWORDAtOffset(offset1, 1); });	//0 can not be decreased
-			p.IncreaseDWORDAtOffset(offset1, UINT32_MAX - 4);
+			p.IncreaseDWORDAtOffset(offset1, UINT32_MAX - 4);											//**This value will be checked later
 			Assert::AreEqual((uint32_t)UINT32_MAX - 4, p.GetDWORDAtOffset(offset1));
 			Assert::ExpectException<std::runtime_error>([&] {p.IncreaseDWORDAtOffset(offset1, 5); });	//can not be increased to greater than UINT32_MAX
 
+			int val1 = 17;
+			p.AppendData<int>(val1);			//take a left value as parameter
+
 			long offset3 = 0;
-			p.AppendData<int>(50, &offset3);
+			p.AppendData<int>(50, &offset3);	//take a right value as parameter
 
 			int &intRef = p.GetReferenceAtOffset<int>(offset3);
 			Assert::AreEqual(50, intRef);
@@ -73,6 +76,13 @@ namespace ProtocolPackageTest
 			Assert::AreEqual(&intRef, &intRef2);
 
 			Assert::ExpectException<std::runtime_error>([&] {p.GetReferenceAtOffset<int>(offset3 + sizeof(int)); });
+
+
+			Assert::AreEqual((uint32_t)UINT32_MAX - 4, p.GetNextDWORD());
+			Assert::AreEqual((uint32_t)315, p.GetNextDWORD());
+			Assert::AreEqual((int)17, p.GetNextData<int>());
+			Assert::AreEqual((int)-30, p.GetNextData<int>());
+			Assert::ExpectException<std::runtime_error>([&] {p.GetNextData<int>(); });		//No more data
 
 		}
 

@@ -229,6 +229,12 @@ public:
 	{
 		return AppendRawData(&val, sizeof(val), pOffset);
 	}
+	template<typename T>
+	long AppendData(T &val, long *pOffset = nullptr)
+	{
+		return AppendRawData(&val, sizeof(val), pOffset);
+	}
+
 	long AppendData(unsigned char val);
 	long AppendData(uint16_t val);
 	long AppendData(uint32_t val, long *pOffset = nullptr);
