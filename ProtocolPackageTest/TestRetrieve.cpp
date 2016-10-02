@@ -155,6 +155,7 @@ namespace ProtocolPackageTest
 			const char rawData2[7] = { 11,12,13,14,15,16,17 };
 			proRaws.AppendRawData((void*)rawData2, 7);
 			proRaws.AppendRawData(nullptr, 0);
+			proRaws.AppendData<int>(1020);
 
 			char rawBuf[128] = { 0 };
 			int len = proRaws.GetNextRawData(rawBuf, 128);
@@ -170,6 +171,9 @@ namespace ProtocolPackageTest
 			len = proRaws.GetNextRawData(rawBufEmpty, 16);
 			Assert::AreEqual(0, len);
 			Assert::AreEqual(0, memcmp(rawBufEmptyCompare, rawBufEmpty, 16));	//Input buffer should not be touched
+
+			int nextInt = proRaws.GetNextData<int>();
+			Assert::AreEqual(1020, nextInt);
 		}
 
 		TEST_METHOD(TestRetrieveGUID)

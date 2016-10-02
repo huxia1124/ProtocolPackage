@@ -201,8 +201,34 @@ protected:
 public:
 	static long GetCompactIntegerLen(unsigned int nValue);
 	static long DecodeCompactInteger(void *pData, unsigned char *pLengthBytes);		//pLengthBytes : out, size in bytes of the length prefix 
-	void IncreaseDWORDAtOffset(long nOffset);
+	void IncreaseDWORDAtOffset(long nOffset, uint32_t number);
+	void DecreaseDWORDAtOffset(long nOffset, uint32_t number);
+	uint32_t GetDWORDAtOffset(long nOffset);
 
+	//Remember to always call GetReferenceAtOffset again after adding some data. 
+	template<typename T>
+	T& GetReferenceAtOffset(long nOffset)
+	{
+		static T temp;
+		if (nOffset >= m_nCurentWriteOffset)
+		{
+			throw std::runtime_error("GetReferenceAtOffset<T>(long) : offset is out of the range of valid data.");
+			return temp;
+		}
+		if (nOffset + (long)sizeof(T) > m_nCurentWriteOffset)
+		{
+			throw std::runtime_error("GetReferenceAtOffset<T>(long) : not enough data.");
+			return temp;
+		}
+
+		return *((T*)(GetDataContentBasePtr() + nOffset));
+	}
+
+	template<typename T>
+	long AppendData(T &&val, long *pOffset = nullptr)
+	{
+		return AppendRawData(&val, sizeof(val), pOffset);
+	}
 	long AppendData(unsigned char val);
 	long AppendData(uint16_t val);
 	long AppendData(uint32_t val, long *pOffset = nullptr);
@@ -215,7 +241,7 @@ public:
 	long AppendData(double val);
 	long AppendData(GUID &val);
 	long AppendData(CSTXProtocol *pVal);	//Object
-	long AppendRawData(void *pData, long cbDataLen);
+	long AppendRawData(void *pData, long cbDataLen, long *pOffset = nullptr);
 	long AppendUnicodeString(const char* lpszVal);								//Append as Unicode string
 	long AppendUnicodeString(const char16_t* lpszVal);								//Append as Unicode string
 	long AppendUnicodeStringPair(const char* lpszVal1, const char* lpszVal2);		//Append as Unicode string
@@ -244,6 +270,13 @@ public:
 	int Decode(void *pData, long *pDataReadLen, long cbInputDataLen);
 	int DecodeWithDecrypt(void *pData, long *pDataReadLen, uint32_t dwKey);
 
+	template<typename T>
+	T GetNextData()
+	{
+		T tmp;
+		GetNextRawData(&tmp, sizeof(tmp));
+		return tmp;
+	}
 	unsigned char GetNextByte();
 	uint16_t GetNextWORD();
 	uint32_t GetNextDWORD();

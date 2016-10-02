@@ -160,6 +160,11 @@ namespace ProtocolPackageTest
 			proRaws.AppendRawData(nullptr, 0);
 			expectLength += 2;
 			Assert::AreEqual(expectLength, proRaws.GetDataLen());
+
+			//Add typed raw data, Type + lenthPrefix + content[?]
+			proRaws.AppendData<int>(1020);
+			expectLength += 1 + 1 + sizeof(int);
+			Assert::AreEqual(expectLength, proRaws.GetDataLen());
 		}
 
 		TEST_METHOD(TestAppendGUID)

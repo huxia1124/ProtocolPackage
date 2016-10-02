@@ -24,6 +24,7 @@
 #include <sstream>
 #include <iomanip>
 #include <algorithm>
+#include <limits>
 
 #define STXPROTOCOL_INITIAL_BUFFER_SIZE				256
 #define STXPROTOCOL_INITIAL_BUFFER_PREFIX_SIZE		16
@@ -804,10 +805,12 @@ long CSTXProtocol::AppendData( CSTXProtocol *pVal )
 	return nDataLen;
 }
 
-long CSTXProtocol::AppendRawData(void *pData, long cbDataLen)
+long CSTXProtocol::AppendRawData(void *pData, long cbDataLen, long *pOffset)
 {
 	WriteDataType(STXPROTOCOL_DATA_TYPE_RAW);
 	WriteCompactInteger(cbDataLen);
+	if (pOffset)
+		*pOffset = m_nCurentWriteOffset;
 	WriteRawData(pData, cbDataLen);
 	return cbDataLen;
 }
@@ -2293,9 +2296,50 @@ uint32_t CSTXProtocol::GetNextStringToDWORDPair(char16_t *lpBuffer, int cchBuffe
 	return dwValue;
 }
 
-void CSTXProtocol::IncreaseDWORDAtOffset( long nOffset )
+void CSTXProtocol::IncreaseDWORDAtOffset( long nOffset, uint32_t number)
 {
-	(*((uint32_t*)(GetDataContentBasePtr() + nOffset)))++;
+	if (nOffset >= m_nCurentWriteOffset)
+	{
+		throw std::runtime_error("IncreaseDWORDAtOffset(long,uint32_t) : offset is out of the range of valid data.");
+		return;
+	}
+	uint32_t &ref = (*((uint32_t*)(GetDataContentBasePtr() + nOffset)));
+#ifdef WIN32
+	if (UINT32_MAX - number < ref)
+#else
+	if (ref < std::numeric_limits<uint32_t>::max() - number < ref)
+#endif
+	{
+		throw std::runtime_error("DecreaseDWORDAtOffset(long,uint32_t) : increasing overflow.");
+		return;
+	}
+	ref += number;
 }
 
+void CSTXProtocol::DecreaseDWORDAtOffset(long nOffset, uint32_t number)
+{
+	if (nOffset >= m_nCurentWriteOffset)
+	{
+		throw std::runtime_error("DecreaseDWORDAtOffset(long,uint32_t) : offset is out of the range of valid data.");
+		return;
+	}
+	uint32_t &ref = (*((uint32_t*)(GetDataContentBasePtr() + nOffset)));
+	if (ref < number)
+	{
+		throw std::runtime_error("DecreaseDWORDAtOffset(long,uint32_t) : decreasing overflow.");
+		return;
+	}
+	ref -= number;
+}
+
+uint32_t CSTXProtocol::GetDWORDAtOffset(long nOffset)
+{
+	if (nOffset >= m_nCurentWriteOffset)
+	{
+		throw std::runtime_error("IncreaseDWORDAtOffset(long,uint32_t) : offset is out of the range of valid data.");
+		return 0;
+	}
+
+	return *((uint32_t*)(GetDataContentBasePtr() + nOffset));
+}
 
