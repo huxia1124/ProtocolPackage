@@ -121,23 +121,6 @@ namespace ProtocolPackageTest
 			}
 
 			delete[]pData;
-
-
-			/*
-			std::string s;
-			p.EnumValues(STXProtocolEnumFuncImpl, &s);
-
-			Assert::AreEqual(std::string(
-				"Word:123\n"
-				"Byte:254\n"
-				"DWord:175553337\n"
-				"int64:301194722233\n"
-				"int64:-92865553832\n"
-				"UTF-8 Pair:Key1,Val1\n"
-				"UTF-8 to uint32_t Pair:Key2,96\n"
-			), s);
-			*/
-		
 		}
 
 	};

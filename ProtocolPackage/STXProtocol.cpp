@@ -960,11 +960,17 @@ int CSTXProtocol::Decode( void *pData, long *pDataReadLen, long cbInputDataLen)
 {
 	unsigned char nLengthBytes = 0;
 	long nObjectContentLength = DecodeCompactInteger(pData, &nLengthBytes);
-	if(nObjectContentLength == -1 || nObjectContentLength < 1)
-		return 1;	//Error parsing package length 
+	if (nObjectContentLength == -1 || nObjectContentLength < 1)
+	{
+		throw std::runtime_error("Decode(void*,long*,long) : Error parsing package length.");
+		return 1;	//Error parsing package length
+	}
 
 	if (cbInputDataLen > 0 && nObjectContentLength + nLengthBytes + 1 > cbInputDataLen)
+	{
+		throw std::runtime_error("Decode(void*,long*,long) : Error not enough actual data.");
 		return 2;	//Error not enough actual data
+	}
 
 	unsigned char &crc = ((unsigned char*)pData)[nLengthBytes];
 	unsigned char crcFrom = 0;
@@ -974,8 +980,8 @@ int CSTXProtocol::Decode( void *pData, long *pDataReadLen, long cbInputDataLen)
 	}
 	if (crcFrom != crc)
 	{
-		//CRC check error!
-		return 3;	//Error crc check failed
+		throw std::runtime_error("Decode(void*,long*,long) : Error parsing package, CRC mismatch.");
+		return 8;	//Error crc check failed
 	}
 
 	ResetPosition();
