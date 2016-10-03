@@ -162,6 +162,7 @@
     </ClCompile>
     <ClCompile Include="TestAppend.cpp" />
     <ClCompile Include="TestDecode.cpp" />
+    <ClCompile Include="TestEmbedded.cpp" />
     <ClCompile Include="TestEncrypt.cpp" />
     <ClCompile Include="TestEnum.cpp" />
     <ClCompile Include="TestOffset.cpp" />

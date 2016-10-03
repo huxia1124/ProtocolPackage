@@ -311,10 +311,15 @@ public:
 	int EnumValues(std::function<void (unsigned char originalType, STXPROTOCOLVALUE *pVal, STXPROTOCOLVALUE *pValExtra, void *pUserData)> pfnEnum, void *pUserData);
 
 	void SkipNextField();
+
+	//Is there more data can be read
 	bool IsDataAvailable();
+
 	int GetNextFieldLength();
 	unsigned char GetNextFieldType();
 	static const char *GetTypeString(unsigned char nType);
 	void SeekReadToBegin();
+
+	//Reset all the content and read/write pointers in this object. Will become empty.
 	void Clear();
 };
