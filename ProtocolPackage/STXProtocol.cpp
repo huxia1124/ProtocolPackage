@@ -230,6 +230,31 @@ long CSTXProtocolUtility::ConvertToHexString(unsigned char* lpData, uint32_t cbD
 
 }
 
+long CSTXProtocolUtility::ConvertToHexString(unsigned char* lpData, uint32_t cbDataLen, char16_t *lpszHexBuf, bool bUpperCased)
+{
+	static const char16_t szHexDictUpper[16] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
+	static const char16_t szHexDictLower[16] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
+	uint32_t i = 0;
+	if (bUpperCased)
+	{
+		for (i = 0; i < cbDataLen; i++)
+		{
+			lpszHexBuf[i * 2] = szHexDictUpper[(lpData[i] >> 4) & 0x0F];
+			lpszHexBuf[i * 2 + 1] = szHexDictUpper[lpData[i] & 0x0F];
+		}
+	}
+	else
+	{
+		for (i = 0; i < cbDataLen; i++)
+		{
+			lpszHexBuf[i * 2] = szHexDictLower[(lpData[i] >> 4) & 0x0F];
+			lpszHexBuf[i * 2 + 1] = szHexDictLower[lpData[i] & 0x0F];
+		}
+	}
+	lpszHexBuf[i * 2] = 0;
+	return cbDataLen * 2;
+}
+
 std::string CSTXProtocolUtility::UTF16ToUTF8(std::u16string utf16_string)
 {
 #if _MSC_VER == 1900
@@ -366,7 +391,7 @@ CSTXProtocolString::CSTXProtocolString( STXPROTOCOLVALUE *pVal )
 		else if ((pVal->nValueType & 0x8F) == STXPROTOCOL_DATA_TYPE_RAW)
 		{
 			char *pszHex = new char[pVal->cbDataLen * 2];
-			ConvertToHexString((unsigned char*)pVal->pDataPtr, pVal->cbDataLen * 2, pszHex, true);
+			CSTXProtocolUtility::ConvertToHexString((unsigned char*)pVal->pDataPtr, pVal->cbDataLen * 2, pszHex, true);
 			ExpandTo(pVal->cbDataLen * 2 * sizeof(char));
 			CSTXProtocolUtility::ConvertString(pszHex, pVal->cbDataLen * 2, m_pBuffer, m_cchBufferSize);		
 		}
@@ -393,56 +418,6 @@ CSTXProtocolString::~CSTXProtocolString()
 		delete []m_pBuffer;
 		m_pBuffer = nullptr;
 	}
-}
-
-long CSTXProtocolString::ConvertToHexString(unsigned char* lpData, uint32_t cbDataLen, char *lpszHexBuf, bool bUpperCased)
-{
-	static const char szHexDictUpper[16] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
-	static const char szHexDictLower[16] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
-	uint32_t i = 0;
-	if (bUpperCased)
-	{
-		for (i = 0; i<cbDataLen; i++)
-		{
-			lpszHexBuf[i * 2] = szHexDictUpper[(lpData[i] >> 4) & 0x0F];
-			lpszHexBuf[i * 2 + 1] = szHexDictUpper[lpData[i] & 0x0F];
-		}
-	}
-	else
-	{
-		for (i = 0; i<cbDataLen; i++)
-		{
-			lpszHexBuf[i * 2] = szHexDictLower[(lpData[i] >> 4) & 0x0F];
-			lpszHexBuf[i * 2 + 1] = szHexDictLower[lpData[i] & 0x0F];
-		}
-	}
-	lpszHexBuf[i * 2] = 0;
-	return cbDataLen * 2;
-}
-
-long CSTXProtocolString::ConvertToHexString(unsigned char* lpData, uint32_t cbDataLen, char16_t *lpszHexBuf, bool bUpperCased)
-{
-	static const char16_t szHexDictUpper[16] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
-	static const char16_t szHexDictLower[16] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
-	uint32_t i = 0;
-	if (bUpperCased)
-	{
-		for (i = 0; i < cbDataLen; i++)
-		{
-			lpszHexBuf[i * 2] = szHexDictUpper[(lpData[i] >> 4) & 0x0F];
-			lpszHexBuf[i * 2 + 1] = szHexDictUpper[lpData[i] & 0x0F];
-		}
-	}
-	else
-	{
-		for (i = 0; i < cbDataLen; i++)
-		{
-			lpszHexBuf[i * 2] = szHexDictLower[(lpData[i] >> 4) & 0x0F];
-			lpszHexBuf[i * 2 + 1] = szHexDictLower[lpData[i] & 0x0F];
-		}
-	}
-	lpszHexBuf[i * 2] = 0;
-	return cbDataLen * 2;
 }
 
 void CSTXProtocolString::ExpandTo( int cchMax )

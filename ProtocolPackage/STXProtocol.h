@@ -119,6 +119,7 @@ public:
 
 	static std::string ConvertGUIDToUTF8(GUID *guid);
 	static long ConvertToHexString(unsigned char* lpData, uint32_t cbDataLen, char *lpszHexBuf, bool bUpperCased);
+	static long ConvertToHexString(unsigned char* lpData, uint32_t cbDataLen, char16_t *lpszHexBuf, bool bUpperCased);
 
 	static std::string UTF16ToUTF8(std::u16string utf16_string);
 	static std::string UTF16ToUTF8(const char16_t *begin, const char16_t *end);
@@ -144,8 +145,6 @@ protected:
 
 protected:
 	void ExpandTo(int cchMax);
-	long ConvertToHexString(unsigned char* lpData, uint32_t cbDataLen, char *lpszHexBuf, bool bUpperCased);
-	long ConvertToHexString(unsigned char* lpData, uint32_t cbDataLen, char16_t *lpszHexBuf, bool bUpperCased);
 
 public:
 	operator const char16_t*();
