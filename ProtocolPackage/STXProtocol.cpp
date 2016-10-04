@@ -1206,7 +1206,7 @@ GUID CSTXProtocol::GetNextGUID()
 	return nValue;
 }
 
-CSTXProtocol* CSTXProtocol::GetNextObject()
+std::shared_ptr<CSTXProtocol> CSTXProtocol::GetNextObject()
 {
 	const unsigned char nType = STXPROTOCOL_DATA_TYPE_OBJECT;
 	if(!IsValidDataType(nType))
@@ -1216,14 +1216,13 @@ CSTXProtocol* CSTXProtocol::GetNextObject()
 	}
 
 	long nDataReadLen = 0;
-	CSTXProtocol *pNewObject = new CSTXProtocol();
+	std::shared_ptr<CSTXProtocol> pNewObject = std::make_shared<CSTXProtocol>();
 	if(pNewObject->DecodeEmbeddedObject(GetDataContentBasePtr() + m_nCurentReadOffset + 1, &nDataReadLen))
 	{
 		SkipTypeIndicator();
 		m_nCurentReadOffset += nDataReadLen;
 		return pNewObject;
 	}
-	delete pNewObject;
 	return nullptr;
 }
 
@@ -1690,6 +1689,7 @@ int CSTXProtocol::EnumValues(std::function<void(unsigned char originalType, STXP
 	STXPROTOCOLVALUE valExtra;
 	//valExtra.nValueType = STXPROTOCOL_DATA_TYPE_INVALID;
 	unsigned char originalType = STXPROTOCOL_DATA_TYPE_INVALID;
+	std::shared_ptr<CSTXProtocol> object;
 	while (IsDataAvailable())
 	{
 		val.nValueType = GetNextFieldType();
@@ -1729,7 +1729,9 @@ int CSTXProtocol::EnumValues(std::function<void(unsigned char originalType, STXP
 		break;
 		case STXPROTOCOL_DATA_TYPE_OBJECT:
 		{
-			val.pObject = GetNextObject();
+			object = GetNextObject();
+			if(object)
+				val.pObject = object.get();
 		}
 		break;
 		case STXPROTOCOL_DATA_TYPE_RAW:
@@ -1802,9 +1804,6 @@ int CSTXProtocol::EnumValues(std::function<void(unsigned char originalType, STXP
 		}
 
 		pfnEnum(originalType, &val, &valExtra, pUserData);
-
-		if (val.nValueType == STXPROTOCOL_DATA_TYPE_OBJECT && val.pObject)
-			delete val.pObject;
 
 		nValEnumCount++;
 	}

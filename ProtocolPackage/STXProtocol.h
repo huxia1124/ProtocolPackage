@@ -20,6 +20,7 @@
 #include <cstdint>
 #include <string>
 #include <functional>
+#include <memory>
 
 #ifdef WIN32
 #include <windows.h>
@@ -289,7 +290,7 @@ public:
 	float GetNextFloat();
 	double GetNextDouble();
 	GUID GetNextGUID();
-	CSTXProtocol* GetNextObject();
+	std::shared_ptr<CSTXProtocol> GetNextObject();
 	int GetNextString(char *lpBuffer, int cchBufferLen);
 	int GetNextString(char16_t *lpBuffer, int cchBufferLen);
 	std::string GetNextString();

@@ -45,8 +45,8 @@ namespace ProtocolPackageTest
 
 			Assert::IsTrue((uint16_t)500 == p.GetNextWORD());
 
-			CSTXProtocol *pe1 = p.GetNextObject();
-			Assert::IsNotNull(pe1);
+			std::shared_ptr<CSTXProtocol> pe1 = p.GetNextObject();
+			Assert::IsTrue(pe1 != nullptr);
 			Assert::AreEqual((unsigned char)56, pe1->GetNextByte());
 			Assert::AreEqual(std::string("E1 String1"), pe1->GetNextString());
 			char buf1[64] = { 0 };
@@ -57,11 +57,9 @@ namespace ProtocolPackageTest
 			Assert::IsFalse(pe1->IsDataAvailable());
 			Assert::ExpectException<std::runtime_error>([&] {pe1->GetNextByte(); });
 
-			delete pe1;
-
 			Assert::IsTrue((uint32_t)100000 == p.GetNextDWORD());
-			CSTXProtocol *pe2 = p.GetNextObject();
-			Assert::IsNotNull(pe2);
+			std::shared_ptr<CSTXProtocol> pe2 = p.GetNextObject();
+			Assert::IsTrue(pe2 != nullptr);
 			Assert::IsTrue(std::u16string(u"E2 String1") == pe2->GetNextUnicodeString());
 			char16_t bufu1[64] = { 0 };
 			char16_t bufu2[64] = { 0 };
@@ -72,10 +70,7 @@ namespace ProtocolPackageTest
 			Assert::IsFalse(pe2->IsDataAvailable());
 			Assert::ExpectException<std::runtime_error>([&] {pe2->GetNextByte(); });
 
-
 			Assert::IsFalse(p.IsDataAvailable());
-
-			delete pe2;
 		}
 		
 		TEST_METHOD(TestRecursiveEmbeddedObjects)
@@ -97,19 +92,16 @@ namespace ProtocolPackageTest
 
 			Assert::IsTrue(std::u16string(u"Main") == p.GetNextUnicodeString());
 
-			CSTXProtocol *pc1 = p.GetNextObject();
-			Assert::IsNotNull(pc1);
+			std::shared_ptr<CSTXProtocol> pc1 = p.GetNextObject();
+			Assert::IsTrue(pc1 != nullptr);
 			Assert::IsTrue(std::u16string(u"Child Level 1") == pc1->GetNextUnicodeString());
 
-			CSTXProtocol *pc2 = pc1->GetNextObject();
-			Assert::IsNotNull(pc2);
+			std::shared_ptr<CSTXProtocol> pc2 = pc1->GetNextObject();
+			Assert::IsTrue(pc2 != nullptr);
 			Assert::IsFalse(pc1->IsDataAvailable());
 
 			Assert::IsTrue(std::u16string(u"Second Level Child") ==  pc2->GetNextUnicodeString());
 			Assert::IsFalse(pc2->IsDataAvailable());
-
-			delete pc2;
-			delete pc1;
 
 		}
 
