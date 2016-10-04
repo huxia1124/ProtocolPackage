@@ -28,7 +28,7 @@ namespace ProtocolPackageTest
 	public:
 		TEST_METHOD(TestSimpleAppendPrimitive)
 		{
-			long expectLength = 2;		//By default, an empty package has length and CRC data. 
+			size_t expectLength = 2;		//By default, an empty package has length and CRC data. 
 			Assert::AreEqual(expectLength, proPrimitives.GetDataLen());		//Length, CRC
 
 			//Add WORD, Type + WORD[2]
@@ -65,7 +65,7 @@ namespace ProtocolPackageTest
 		
 		TEST_METHOD(TestSimpleAppendString)
 		{
-			long expectLength = 2;		//By default, an empty package has length and CRC data. 
+			size_t expectLength = 2;		//By default, an empty package has length and CRC data. 
 			Assert::AreEqual(expectLength, proStrings.GetDataLen());		//Length, CRC
 
 			//Add string 'Hello World', Type + lenthPrefix + content[11]
@@ -91,27 +91,27 @@ namespace ProtocolPackageTest
 
 		TEST_METHOD(TestAppendLongString)
 		{
-			long expectLength = 2;		//By default, an empty package has length and CRC data. 
+			size_t expectLength = 2;		//By default, an empty package has length and CRC data. 
 			Assert::AreEqual(expectLength, proStrings.GetDataLen());		//Length, CRC
 
-			long lengthPrefixWhole = CSTXProtocol::GetCompactIntegerLen(expectLength);
+			size_t lengthPrefixWhole = CSTXProtocol::GetCompactIntegerLen(expectLength);
 
 			//Add string 'Hello World', Type + lenthPrefix + content[?]
 			const char str1[] = "Maybe you glance through a ground-floor window and your gaze lingers a little longer than it should because the twinkle of a chandelier catches your eye. Or maybe the crisp lines of a doorman¡¯s uniform make you pause or maybe it¡¯s the gentle hand he proffers to help an elderly resident cross the threshold.";
-			long strLen1 = strlen(str1);
-			long lengthPrefixLen1 = CSTXProtocol::GetCompactIntegerLen(strLen1);
+			size_t strLen1 = strlen(str1);
+			size_t lengthPrefixLen1 = CSTXProtocol::GetCompactIntegerLen(strLen1);
 			proStrings.AppendData(str1);
 			expectLength += (1 + lengthPrefixLen1 + strLen1);
 
 			//for large data appended, the length of the whole package might also be extended to mote bytes.
-			long lengthPrefixWholeAfter = CSTXProtocol::GetCompactIntegerLen(expectLength);
+			size_t lengthPrefixWholeAfter = CSTXProtocol::GetCompactIntegerLen(expectLength);
 
 			Assert::AreEqual(expectLength + (lengthPrefixWholeAfter - lengthPrefixWhole), proStrings.GetDataLen());
 		}
 
 		TEST_METHOD(TestAppendPair)
 		{
-			long expectLength = 2;		//By default, an empty package has length and CRC data. 
+			size_t expectLength = 2;		//By default, an empty package has length and CRC data. 
 			Assert::AreEqual(expectLength, proPairs.GetDataLen());		//Length, CRC
 
 			//Add string pair 'Hello'/'World', Type + lenthPrefix1 + content1[5] + lenthPrefix2 + content2[5]
@@ -141,7 +141,7 @@ namespace ProtocolPackageTest
 		}
 		TEST_METHOD(TestAppendRawData)
 		{
-			long expectLength = 2;		//By default, an empty package has length and CRC data. 
+			size_t expectLength = 2;		//By default, an empty package has length and CRC data. 
 			Assert::AreEqual(expectLength, proRaws.GetDataLen());		//Length, CRC
 
 			//Add raw bytes data, Type + lenthPrefix + content[12]
@@ -171,7 +171,7 @@ namespace ProtocolPackageTest
 		{
 			CSTXProtocol proGUID;
 
-			long expectLength = 2;		//By default, an empty package has length and CRC data. 
+			size_t expectLength = 2;		//By default, an empty package has length and CRC data. 
 			Assert::AreEqual(expectLength, proGUID.GetDataLen());		//Length, CRC
 
 			//Add guid, Type + content[16]

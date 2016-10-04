@@ -26,9 +26,9 @@ namespace ProtocolPackageTest
 		{
 			CSTXProtocol p;
 
-			long offset1 = 0;
+			size_t offset1 = 0;
 			p.AppendData((uint32_t)0, &offset1);
-			long offset2 = 0;
+			size_t offset2 = 0;
 			p.AppendData((uint32_t)100, &offset2);
 
 			p.IncreaseDWORDAtOffset(offset1, 1);
@@ -61,7 +61,7 @@ namespace ProtocolPackageTest
 			int val1 = 17;
 			p.AppendData<int>(val1);			//take a left value as parameter
 
-			long offset3 = 0;
+			size_t offset3 = 0;
 			p.AppendData<int>(50, &offset3);	//take a right value as parameter
 
 			int &intRef = p.GetReferenceAtOffset<int>(offset3);

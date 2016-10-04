@@ -103,7 +103,7 @@ namespace ProtocolPackageTest
 				p.GetEncryptedData(pData, len, key);
 				Assert::AreNotEqual(0, memcmp(p.GetBasePtr(), pData, p.GetDataLen()));
 
-				long dataLen = 0;
+				size_t dataLen = 0;
 				CSTXProtocol pd;
 				pd.DecodeWithDecrypt(pData, &dataLen, key);
 
