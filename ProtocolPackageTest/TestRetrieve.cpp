@@ -159,11 +159,11 @@ namespace ProtocolPackageTest
 
 			char rawBuf[128] = { 0 };
 			int len = proRaws.GetNextRawData(rawBuf, 128);
-			Assert::AreEqual(sizeof(rawData1), (unsigned int)len);
+			Assert::AreEqual(sizeof(rawData1), (size_t)len);
 			Assert::AreEqual(0, memcmp(rawBuf, rawData1, len));
 
 			len = proRaws.GetNextRawData(rawBuf, 128);
-			Assert::AreEqual(sizeof(rawData2), (unsigned int)len);
+			Assert::AreEqual(sizeof(rawData2), (size_t)len);
 			Assert::AreEqual(0, memcmp(rawBuf, rawData2, len));
 
 			char rawBufEmpty[16] = { 0 };
