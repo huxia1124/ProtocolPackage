@@ -43,6 +43,8 @@ namespace ProtocolPackageTest
 			Assert::IsTrue(abs(f - 123.32) < 0.00001f);
 			double d = proPrimitives.GetNextDouble();
 			Assert::IsTrue(abs(d - 3291.876) < 0.0000001);
+
+			Assert::IsFalse(proPrimitives.IsDataAvailable());
 		}
 		
 		TEST_METHOD(TestSimpleRetrieveString)
@@ -63,6 +65,7 @@ namespace ProtocolPackageTest
 			proStrings.AppendData("Test2");		//Store as UTF8
 			proStrings.AppendData("");			//Empty string
 			proStrings.AppendData("");			//Another Empty string
+			proStrings.AppendData("");			//More Empty string
 			proStrings.AppendData("");			//More Empty string
 
 			Assert::AreEqual(std::string("Hello World"), proStrings.GetNextString());
@@ -108,6 +111,10 @@ namespace ProtocolPackageTest
 			proStrings.GetNextString(bufEmpty, 16);
 			Assert::AreEqual(std::string(""), std::string(bufEmpty));
 
+			char16_t bufEmptyU[16] = { 0 };
+			proStrings.GetNextString(bufEmptyU, 16);
+			Assert::IsTrue(std::u16string(u"") == std::u16string(bufEmptyU));
+
 			CSTXProtocolString s3empty;
 			proStrings.GetNextString(&s3empty);
 			Assert::IsTrue(std::u16string(u"") == std::u16string((const char16_t*)s3empty));
@@ -126,6 +133,8 @@ namespace ProtocolPackageTest
 			std::string result = proStrings.GetNextString();
 
 			Assert::AreEqual(std::string(str1), result);
+
+			Assert::IsFalse(proStrings.IsDataAvailable());
 		}
 
 		TEST_METHOD(TestRetrievePair)
@@ -160,6 +169,8 @@ namespace ProtocolPackageTest
 			Assert::IsTrue(std::u16string(u"Go") == std::u16string(buf1));
 			Assert::IsTrue(std::u16string(u"Home") == std::u16string(buf2));
 
+			Assert::IsFalse(proPairs.IsDataAvailable());
+
 		}
 		TEST_METHOD(TestRetrieveRawData)
 		{
@@ -189,6 +200,8 @@ namespace ProtocolPackageTest
 
 			int nextInt = proRaws.GetNextData<int>();
 			Assert::AreEqual(1020, nextInt);
+	
+			Assert::IsFalse(proRaws.IsDataAvailable());
 		}
 
 		TEST_METHOD(TestRetrieveGUID)
@@ -199,63 +212,8 @@ namespace ProtocolPackageTest
 
 			GUID g2 = proGUID.GetNextGUID();
 			Assert::AreEqual(0, memcmp(&g1, &g2, sizeof(g1)));
-		}
 
-		TEST_METHOD(TestMethod1)
-		{
-			// TODO: Your test code here
-			GUID guid;
-			guid.Data1 = 0xAE3C55DA;
-			guid.Data2 = 12765;
-			guid.Data3 = 7883;
-			for (int i = 0; i < 8; i++)
-				guid.Data4[i] = rand() % 256;
-
-			CSTXProtocol pro;
-			CSTXProtocol proEmbedded;
-			proEmbedded.AppendData("Hello");
-			proEmbedded.AppendData("World");
-			/*
-			pro.AppendData("Abc");
-			pro.AppendData((uint32_t)32);
-			pro.AppendData((int64_t)64);
-			pro.AppendData((uint16_t)16);
-			pro.AppendData((unsigned char)'C');
-			pro.AppendUnicodeString(u"Unicode");
-			pro.AppendUnicodeString(u"UnicodeString2");
-			pro.AppendData(guid);
-			*/
-			pro.AppendDataPair(u"Data1", 1024);
-			pro.AppendData(&proEmbedded);
-			//pro.AppendUnicodeStringPair(u"UPKey1", u"UPValue1");
-			pro.AppendDataPair("Data2", 2048);
-
-			pro.SeekReadToBegin();
-
-			/*
-			pro.EnumValues([&](STXPROTOCOLVALUE *pVal, STXPROTOCOLVALUE *pValExtra, void *pUserData)
-			{
-			CSTXProtocolString val(pVal);
-			CSTXProtocolString valExtra(pValExtra);
-			if (pVal->nValueType != STXPROTOCOL_DATA_TYPE_OBJECT)
-			{
-			pVal->pObject->EnumValues()
-			}
-			else if (pValExtra->nValueType != STXPROTOCOL_DATA_TYPE_INVALID)
-			{
-			std::cout << CSTXProtocol::GetTypeString(pVal->nValueType) << ": " << (const char*)val << "\t" << (const char*)valExtra << std::endl;
-			}
-			else
-			{
-			std::cout << CSTXProtocol::GetTypeString(pVal->nValueType) << ": " << (const char*)val << std::endl;
-			}
-
-			}, 0);
-			*/
-
-			//pro.EnumValues(STXProtocolEnumFuncImpl, 0);
-
-			pro.SeekReadToBegin();
+			Assert::IsFalse(proGUID.IsDataAvailable());
 		}
 
 	};
