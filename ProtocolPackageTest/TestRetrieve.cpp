@@ -61,6 +61,9 @@ namespace ProtocolPackageTest
 			proStrings.AppendUnicodeString("Unicode Again");		//Store as Unicode(char16_t)
 			proStrings.AppendData("Test1");		//Store as UTF8
 			proStrings.AppendData("Test2");		//Store as UTF8
+			proStrings.AppendData("");			//Empty string
+			proStrings.AppendData("");			//Another Empty string
+			proStrings.AppendData("");			//More Empty string
 
 			Assert::AreEqual(std::string("Hello World"), proStrings.GetNextString());
 			Assert::AreEqual(std::string("Hello Kitty"), proStrings.GetNextString());
@@ -99,6 +102,18 @@ namespace ProtocolPackageTest
 			proStrings.GetNextString(&s2);
 			Assert::IsTrue(std::u16string(u"Test2") == std::u16string((const char16_t*)s2));
 
+			Assert::IsTrue(std::string("") == proStrings.GetNextString());
+
+			char bufEmpty[16] = { 0 };
+			proStrings.GetNextString(bufEmpty, 16);
+			Assert::AreEqual(std::string(""), std::string(bufEmpty));
+
+			CSTXProtocolString s3empty;
+			proStrings.GetNextString(&s3empty);
+			Assert::IsTrue(std::u16string(u"") == std::u16string((const char16_t*)s3empty));
+
+
+			Assert::IsFalse(proStrings.IsDataAvailable());
 		}
 
 		TEST_METHOD(TestRetrieveLongString)

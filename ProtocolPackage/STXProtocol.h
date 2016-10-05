@@ -77,17 +77,17 @@ struct STXPROTOCOLVALUE
 		double doubleVal;
 		struct
 		{
-			int64_t cchUTF8StringLen;
+			size_t cchUTF8StringLen;
 			const char* pszUTF8String;
 		};
 		struct
 		{
-			int64_t cchUnicodeStringLen;
+			size_t cchUnicodeStringLen;
 			const char16_t* pszUnicodeString;
 		};
 		struct
 		{
-			int64_t cbDataLen;
+			size_t cbDataLen;
 			void *pDataPtr;
 		};
 		CSTXProtocolString *pString;
@@ -240,7 +240,7 @@ protected:
 	//Initialize this object from given input data
 	//This method is used for extracting an embedded CSTXProtocol object from another CSTXProtocol object
 	// pData should start with a length prefix.
-	bool DecodeEmbeddedObject(void *pData, int64_t *pDataReadLen);
+	bool DecodeEmbeddedObject(void *pData, size_t *pDataReadLen);
 
 	//Encrypt and decrypt a single byte
 	static char EncryptByte(char data, char key);
@@ -248,7 +248,7 @@ protected:
 
 public:
 	static size_t GetCompactIntegerLen(size_t nValue);
-	static int64_t DecodeCompactInteger(void *pData, unsigned char *pLengthBytes);		//pLengthBytes : out, size in bytes of the length prefix 
+	static size_t DecodeCompactInteger(void *pData, unsigned char *pLengthBytes);		//pLengthBytes : out, size in bytes of the length prefix 
 	void IncreaseDWORDAtOffset(size_t nOffset, uint32_t number);
 	void DecreaseDWORDAtOffset(size_t nOffset, uint32_t number);
 	uint32_t GetDWORDAtOffset(size_t nOffset);
@@ -339,15 +339,15 @@ public:
 	double GetNextDouble();
 	GUID GetNextGUID();
 	std::shared_ptr<CSTXProtocol> GetNextObject();
-	int64_t GetNextString(char *lpBuffer, int cchBufferLen);
-	int64_t GetNextString(char16_t *lpBuffer, int cchBufferLen);
+	size_t GetNextString(char *lpBuffer, size_t cchBufferLen);
+	size_t GetNextString(char16_t *lpBuffer, size_t cchBufferLen);
 	std::string GetNextString();
 	bool GetNextString(CSTXProtocolString *pString);
 	size_t GetNextUnicodeString(char *lpBuffer, size_t cchBufferLen);
 	size_t GetNextUnicodeString(char16_t *lpBuffer, size_t cchBufferLen);
 	bool GetNextUnicodeString(CSTXProtocolString *pString);
 	std::u16string GetNextUnicodeString();
-	size_t GetNextRawData(void *pBuffer, int cbBufferSize);
+	size_t GetNextRawData(void *pBuffer, size_t cbBufferSize);
 	uint32_t GetNextStringPair(char *lpBuffer1, int cchBufferLen1, char *lpBuffer2, int cchBufferLen2);
 	uint32_t GetNextStringPair(char16_t *lpBuffer1, int cchBufferLen1, char16_t *lpBuffer2, int cchBufferLen2);
 

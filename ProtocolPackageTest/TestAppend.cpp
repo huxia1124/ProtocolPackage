@@ -87,6 +87,12 @@ namespace ProtocolPackageTest
 			proStrings.AppendUnicodeString(u"World");
 			expectLength += 12;
 			Assert::AreEqual(expectLength, proStrings.GetDataLen());
+
+			//Add as empty string , Type + lenthPrefix + content[0]
+			proStrings.AppendData("");
+			expectLength += 2;
+			Assert::AreEqual(expectLength, proStrings.GetDataLen());
+
 		}
 
 		TEST_METHOD(TestAppendLongString)
