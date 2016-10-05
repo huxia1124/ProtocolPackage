@@ -907,13 +907,17 @@ bool CSTXProtocol::DecodeEmbeddedObject( void *pData, size_t *pDataReadLen )
 {
 	unsigned char nLengthBytes = 0;
 	size_t nObjectContentLength = DecodeCompactInteger(pData, &nLengthBytes);
-	if(nObjectContentLength == -1)
+	if (nObjectContentLength == 0)
+	{
 		return false;
+	}
 
 	unsigned char nContentLengthBytes = 0;
 	size_t nContentLength = DecodeCompactInteger(((char*)pData) + nLengthBytes , &nContentLengthBytes);
-	if(nContentLength == -1)
+	if (nContentLength == 0)
+	{
 		return false;
+	}
 
 	ResetPosition();
 	Expand(nContentLength);
@@ -956,11 +960,6 @@ int CSTXProtocol::Decode( void *pData, size_t *pDataReadLen, size_t cbInputDataL
 {
 	unsigned char nLengthBytes = 0;
 	size_t nObjectContentLength = DecodeCompactInteger(pData, &nLengthBytes);
-	if (nObjectContentLength == -1 || nObjectContentLength < 1)
-	{
-		throw std::runtime_error("Decode(void*,long*,long) : Error parsing package length.");
-		return 1;	//Error parsing package length
-	}
 
 	if (cbInputDataLen > 0 && nObjectContentLength + nLengthBytes + 1 > cbInputDataLen)
 	{
@@ -993,8 +992,6 @@ int CSTXProtocol::DecodeWithDecrypt(void * pData, size_t * pDataReadLen, uint32_
 {
 	unsigned char nLengthBytes = 0;
 	size_t nObjectContentLength = DecodeCompactInteger(pData, &nLengthBytes);
-	if (nObjectContentLength == -1 || nObjectContentLength < 1)
-		return 1;	//Error parsing package length 
 
 	//if (cbInputDataLen > 0 && nObjectContentLength + nLengthBytes + 1 > cbInputDataLen)
 	//	return 2;	//Error not enough actual data
@@ -1593,7 +1590,7 @@ std::u16string CSTXProtocol::GetNextUnicodeString()
 		size_t nStringLen = DecodeCompactInteger(GetDataContentBasePtr() + m_nCurentReadOffset + 1, &nLengthBytes);
 		if (nStringLen == 0)
 		{
-			throw std::runtime_error("GetNextUnicodeString() : Failed to decode length prefix.");
+			SkipNextField();
 			return u"";
 		}
 		if (m_nCurentWriteOffset - m_nCurentReadOffset < nStringLen + nLengthBytes + 1)
@@ -1725,7 +1722,7 @@ size_t CSTXProtocol::GetNextRawData( void *pBuffer, size_t cbBufferSize )
 	return nFieldLen;
 }
 
-int64_t CSTXProtocol::GetNextFieldLength()
+size_t CSTXProtocol::GetNextFieldLength()
 {
 	if(m_nCurentWriteOffset - m_nCurentReadOffset > 0)
 	{
@@ -1735,11 +1732,6 @@ int64_t CSTXProtocol::GetNextFieldLength()
 		{
 			unsigned char nLengthBytes = 0;
 			size_t nFieldLen = DecodeCompactInteger(GetDataContentBasePtr() + m_nCurentReadOffset + 1, &nLengthBytes);
-			if(nFieldLen == -1)
-			{
-				throw std::runtime_error("GetNextFieldLength() : failed to evaluate the length of next field.");
-				return -1;
-			}
 			return nLengthBytes + nFieldLen;
 		}
 		else
@@ -1748,7 +1740,7 @@ int64_t CSTXProtocol::GetNextFieldLength()
 		}
 	}
 	throw std::runtime_error("GetNextFieldLength() : failed to evaluate the length of next field.");
-	return -1;
+	return 0;
 }
 
 int CSTXProtocol::EnumValues(std::function<void(unsigned char originalType, STXPROTOCOLVALUE *pVal, STXPROTOCOLVALUE *pValExtra, void *pUserData)> pfnEnum, void *pUserData)
@@ -1936,9 +1928,15 @@ size_t CSTXProtocol::GetNextUnicodeString(char *lpBuffer, size_t cchBufferLen )
 
 	unsigned char nLengthBytes = 0;
 	size_t nStringLen = DecodeCompactInteger(GetDataContentBasePtr() + m_nCurentReadOffset + 1, &nLengthBytes);
-	if(nStringLen == -1)
+	if(nStringLen == 0)
 	{
-		throw std::runtime_error("GetNextUnicodeString(char*,int) : failed to decode length prefix.");
+		if (cchBufferLen < 1)
+		{
+			throw std::runtime_error("GetNextUnicodeString(char*,int) : Buffer is too small.");
+			return 0;
+		}
+		lpBuffer[0] = 0;
+		SkipNextField();
 		return 0;
 	}
 
@@ -1978,9 +1976,15 @@ size_t CSTXProtocol::GetNextUnicodeString(char16_t *lpBuffer, size_t cchBufferLe
 
 	unsigned char nLengthBytes = 0;
 	size_t nStringLen = DecodeCompactInteger(GetDataContentBasePtr() + m_nCurentReadOffset + 1, &nLengthBytes);
-	if (nStringLen == -1)
+	if (nStringLen == 0)
 	{
-		throw std::runtime_error("GetNextUnicodeString(char*,int) : failed to decode length prefix.");
+		if (cchBufferLen < 1)
+		{
+			throw std::runtime_error("GetNextUnicodeString(char16_t*,int) : Buffer is too small.");
+			return 0;
+		}
+		lpBuffer[0] = 0;
+		SkipNextField();
 		return 0;
 	}
 
@@ -2148,11 +2152,6 @@ size_t CSTXProtocol::DecodeUTF8String( void *pDataPtr, char *lpBuffer, size_t cc
 {
 	unsigned char nLengthBytes = 0;
 	size_t nStringLen = DecodeCompactInteger(pDataPtr, &nLengthBytes);
-	if(nStringLen == -1)
-	{
-		throw std::runtime_error("DecodeUTF8String(void*,char*,size_t,size_t*,size_t*) : Failed to decode length prefix.");
-		return 0;
-	}
 
 	if(pOriginalStringPrefixLen)
 		*pOriginalStringPrefixLen = nLengthBytes;
@@ -2160,13 +2159,19 @@ size_t CSTXProtocol::DecodeUTF8String( void *pDataPtr, char *lpBuffer, size_t cc
 	if(pOriginalStringLen)
 		*pOriginalStringLen = nStringLen;
 
-	const char* pStrBase = ((char*)pDataPtr) + nLengthBytes;
 
 	if (cchBufferLen < nStringLen + 1)
 	{
 		throw std::runtime_error("DecodeUTF8String(void*,char*,size_t,size_t*,size_t*) : Buffer is too small.");
 		return 0;
 	}
+
+	if(nStringLen == 0)
+	{
+		return 0;
+	}
+
+	const char* pStrBase = ((char*)pDataPtr) + nLengthBytes;
 
 	memcpy(lpBuffer, pStrBase, nStringLen);
 	lpBuffer[nStringLen] = 0;
@@ -2179,17 +2184,23 @@ size_t CSTXProtocol::DecodeUTF8String(void *pDataPtr, char16_t *lpBuffer, size_t
 {
 	unsigned char nLengthBytes = 0;
 	size_t nStringLen = DecodeCompactInteger(pDataPtr, &nLengthBytes);
-	if (nStringLen == -1)
-	{
-		throw std::runtime_error("DecodeUTF8String(void*,char16_t*,size_t,size_t*,size_t*) : Failed to decode length prefix.");
-		return 0;
-	}
 
 	if (pOriginalStringPrefixLen)
 		*pOriginalStringPrefixLen = nLengthBytes;
 
 	if (pOriginalStringLen)
 		*pOriginalStringLen = nStringLen;
+
+	if (nStringLen == 0)
+	{
+		if (cchBufferLen < 1)
+		{
+			throw std::runtime_error("DecodeUTF8String(void*,char16_t*,size_t,size_t*,size_t*) : Buffer is too small.");
+			return 0;
+		}
+		lpBuffer[0] = 0;
+		return 0;
+	}
 
 	const char* pStrBase = ((char*)pDataPtr) + nLengthBytes;
 
@@ -2214,17 +2225,23 @@ size_t CSTXProtocol::DecodeUnicodeString( void *pDataPtr, char *lpBuffer, size_t
 {
 	unsigned char nLengthBytes = 0;
 	size_t nStringLen = DecodeCompactInteger(pDataPtr, &nLengthBytes);
-	if(nStringLen == -1)
-	{
-		throw std::runtime_error("DecodeUnicodeString(void*,char*,size_t,size_t*,size_t*) : Failed to decode length prefix.");
-		return 0;
-	}
 
 	if(pOriginalStringPrefixLen)
 		*pOriginalStringPrefixLen = nLengthBytes;
 
 	if(pOriginalStringLen)
 		*pOriginalStringLen = nStringLen;
+
+	if (nStringLen == 0)
+	{
+		if (cchBufferLen < 1)
+		{
+			throw std::runtime_error("DecodeUnicodeString(void*,char*,size_t,size_t*,size_t*) : Buffer is too small.");
+			return 0;
+		}
+		lpBuffer[0] = 0;
+		return 0;
+	}
 
 	if(m_nCurentWriteOffset - m_nCurentReadOffset < nStringLen + nLengthBytes + 1)
 	{
@@ -2253,17 +2270,23 @@ size_t CSTXProtocol::DecodeUnicodeString(void *pDataPtr, char16_t *lpBuffer, siz
 {
 	unsigned char nLengthBytes = 0;
 	size_t nStringLen = DecodeCompactInteger(pDataPtr, &nLengthBytes);
-	if (nStringLen == -1)
-	{
-		throw std::runtime_error("DecodeUnicodeString(void*,char16_t*,size_t,size_t*,size_t*) : Failed to decode length prefix.");
-		return 0;
-	}
 
 	if (pOriginalStringPrefixLen)
 		*pOriginalStringPrefixLen = nLengthBytes;
 
 	if (pOriginalStringLen)
 		*pOriginalStringLen = nStringLen;
+
+	if (nStringLen == 0)
+	{
+		if (cchBufferLen < 1)
+		{
+			throw std::runtime_error("DecodeUnicodeString(void*,char16_t*,size_t,size_t*,size_t*) : Buffer is too small.");
+			return 0;
+		}
+		lpBuffer[0] = 0;
+		return 0;
+	}
 
 	if (m_nCurentWriteOffset - m_nCurentReadOffset < nStringLen + nLengthBytes + 1)
 	{
@@ -2291,7 +2314,7 @@ uint32_t CSTXProtocol::GetNextUnicodeStringPair( char *lpBuffer1, int cchBufferL
 	if(!IsValidDataType(nType))
 	{
 		throw std::runtime_error("GetNextUnicodeStringPair(char*,int,char*,int) : Next field is not String Pair type.");
-		return -1;
+		return 0;
 	}
 
 	size_t nPrefixLen = 0, nStringLen = 0;
@@ -2309,7 +2332,7 @@ uint32_t CSTXProtocol::GetNextUnicodeStringPair(char16_t *lpBuffer1, int cchBuff
 	if (!IsValidDataType(nType))
 	{
 		throw std::runtime_error("GetNextObject() : Next field is not String Pair type.");
-		return -1;
+		return 0;
 	}
 
 	size_t nPrefixLen = 0, nStringLen = 0;
@@ -2327,7 +2350,7 @@ uint32_t CSTXProtocol::GetNextStringToDWORDPair( char *lpBuffer, int cchBufferLe
 	if(!IsValidDataType(nType))
 	{
 		throw std::runtime_error("GetNextStringToDWORDPair(char*,int) : Next field is not StringToDWord Pair type.");
-		return -1;
+		return 0;
 	}
 
 	size_t nPrefixLen = 0, nStringLen = 0;
@@ -2345,7 +2368,7 @@ uint32_t CSTXProtocol::GetNextStringToDWORDPair(char16_t *lpBuffer, int cchBuffe
 	if (!IsValidDataType(nType))
 	{
 		throw std::runtime_error("GetNextStringToDWORDPair(char16_t*,int) : Next field is not StringToDWord Pair type.");
-		return -1;
+		return 0;
 	}
 
 	size_t nPrefixLen = 0, nStringLen = 0;

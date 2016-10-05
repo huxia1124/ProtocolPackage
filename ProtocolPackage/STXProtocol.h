@@ -364,7 +364,9 @@ public:
 	//Is there more data can be read
 	bool IsDataAvailable();
 
-	int64_t GetNextFieldLength();
+	//Get the length of next field, including everything in that field except the type indicator
+	size_t GetNextFieldLength();
+
 	unsigned char GetNextFieldType();
 	static const char *GetTypeString(unsigned char nType);
 	void SeekReadToBegin();

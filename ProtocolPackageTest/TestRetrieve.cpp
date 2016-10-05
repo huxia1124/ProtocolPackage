@@ -67,6 +67,7 @@ namespace ProtocolPackageTest
 			proStrings.AppendData("");			//Another Empty string
 			proStrings.AppendData("");			//More Empty string
 			proStrings.AppendData("");			//More Empty string
+			proStrings.AppendData("");			//More Empty string
 
 			Assert::AreEqual(std::string("Hello World"), proStrings.GetNextString());
 			Assert::AreEqual(std::string("Hello Kitty"), proStrings.GetNextString());
@@ -105,6 +106,8 @@ namespace ProtocolPackageTest
 			proStrings.GetNextString(&s2);
 			Assert::IsTrue(std::u16string(u"Test2") == std::u16string((const char16_t*)s2));
 
+			Assert::AreEqual((size_t)1, proStrings.GetNextFieldLength());	//only 1 byte of length prefix
+
 			Assert::IsTrue(std::string("") == proStrings.GetNextString());
 
 			char bufEmpty[16] = { 0 };
@@ -119,6 +122,8 @@ namespace ProtocolPackageTest
 			proStrings.GetNextString(&s3empty);
 			Assert::IsTrue(std::u16string(u"") == std::u16string((const char16_t*)s3empty));
 
+			Assert::IsTrue(std::u16string(u"") == proStrings.GetNextUnicodeString());
+			
 
 			Assert::IsFalse(proStrings.IsDataAvailable());
 		}
