@@ -62,6 +62,8 @@ class CSTXProtocol;
 class CSTXProtocolUtility;
 
 //////////////////////////////////////////////////////////////////////////
+// STXPROTOCOLVALUE
+// Only used in CSTXProtocol::EnumValues
 
 struct STXPROTOCOLVALUE
 {
@@ -247,12 +249,25 @@ protected:
 	static char DecryptByte(char data, char key);
 
 public:
+	//Calculate how many bytes needed to represent the given value in a compact integer
 	static size_t GetCompactIntegerLen(size_t nValue);
-	static size_t DecodeCompactInteger(void *pData, unsigned char *pLengthBytes);		//pLengthBytes : out, size in bytes of the length prefix 
+
+	//Decode the compact integer from input bytes
+	static size_t DecodeCompactInteger(void *pData, unsigned char *pLengthBytes);		//pLengthBytes : out, size in bytes of the length prefix
+
+	//Increase/Decrease the value at specific offset.
+	//the offset is obtained through the second parameter of AppendData(uint32_t, size_t*)
+	//Sometimes, it is necessary to append the number of loop iterations before appending each item. In this case,
+	//  the increment method is useful.
+	// These increment/decrement methods is safe even after appending more data because they are based on the offset
 	void IncreaseDWORDAtOffset(size_t nOffset, uint32_t number);
 	void DecreaseDWORDAtOffset(size_t nOffset, uint32_t number);
+
+	//Get the value of a DWORD value at specified offset.
 	uint32_t GetDWORDAtOffset(size_t nOffset);
 
+	//Get a reference of some type at specified offset.
+	//The returned reference might become invalid after appending more data.
 	//Remember to always call GetReferenceAtOffset again after adding some data. 
 	template<typename T>
 	T& GetReferenceAtOffset(size_t nOffset)
@@ -272,6 +287,9 @@ public:
 		return *((T*)(GetDataContentBasePtr() + nOffset));
 	}
 
+	//Append custom type of data
+	//Data will be stored as raw data type
+	//To retrieve the data, use the template version of GetNextData() method
 	template<typename T>
 	size_t AppendData(T &&val, size_t *pOffset = nullptr)
 	{
@@ -283,6 +301,7 @@ public:
 		return AppendRawData(&val, sizeof(val), pOffset);
 	}
 
+	//Methods to append common type of data.
 	size_t AppendData(unsigned char val);
 	size_t AppendData(uint16_t val);
 	size_t AppendData(uint32_t val, size_t *pOffset = nullptr);
@@ -305,7 +324,9 @@ public:
 	size_t AppendDataPair(const char *lpszVal, uint32_t dwVal);						//UTF8-uint32_t pair
 	size_t AppendDataPair(const char16_t *lpszVal, uint32_t dwVal);						//UTF8-uint32_t pair
 
-	// the length of the prefix and all content (prefix + CRC + content)
+	// The length of the prefix and all content (prefix + CRC + content)
+	// This method returns the length, in bytes, of all valid data, which is exactly the amount of actual data
+	//  ready for transferring or storing.
 	size_t GetDataLen();
 
 	// The address of the length-prefix (This is the address of all valid data: prefix + CRC + content)
@@ -315,6 +336,8 @@ public:
 	// The address of the CRC byte.
 	void* GetCRCBytePtr();
 
+	//Get the encrypted data. Data is encrypted using the given key through the dwKey parameter
+	//the size of encrypted data keeps the same as the original data.
 	size_t GetEncryptedData(void *pBuffer, size_t cbBufferLen, uint32_t dwKey);
 
 	//pData : address of the pure data (address of length-prefix)
@@ -324,6 +347,8 @@ public:
 	int Decode(void *pData, size_t *pDataReadLen, size_t cbInputDataLen);
 	int DecodeWithDecrypt(void *pData, size_t *pDataReadLen, uint32_t dwKey);
 
+	//Retrieve custom data of given type.
+	//This method can only perform on RAW data field. It will not check the actual type of the data.
 	template<typename T>
 	T GetNextData()
 	{
@@ -331,6 +356,9 @@ public:
 		GetNextRawData(&tmp, sizeof(tmp));
 		return tmp;
 	}
+
+	//These methods are used to retrieve data from this object.
+	//After each call, the read position will be updated to point to the next field.
 	unsigned char GetNextByte();
 	uint16_t GetNextWORD();
 	uint32_t GetNextDWORD();
@@ -357,8 +385,11 @@ public:
 	uint32_t GetNextStringToDWORDPair(char *lpBuffer, int cchBufferLen);
 	uint32_t GetNextStringToDWORDPair(char16_t *lpBuffer, int cchBufferLen);
 
+	//Iterate through all the fields starting at the current read position
+	//After calling this method, the read position will point to the end of all fields
 	int EnumValues(std::function<void (unsigned char originalType, STXPROTOCOLVALUE *pVal, STXPROTOCOLVALUE *pValExtra, void *pUserData)> pfnEnum, void *pUserData);
 
+	//Move read position to next data field
 	void SkipNextField();
 
 	//Is there more data can be read
@@ -367,8 +398,14 @@ public:
 	//Get the length of next field, including everything in that field except the type indicator
 	size_t GetNextFieldLength();
 
+	//Returns the type of the next data field.
+	// refer to STXPROTOCOL_DATA_TYPE_*** macros
 	unsigned char GetNextFieldType();
+
+	//Return the textual representation of a field type
 	static const char *GetTypeString(unsigned char nType);
+
+	//Reset the read position, make this object ready to be read from the beginning.
 	void SeekReadToBegin();
 
 	//Reset all the content and read/write pointers in this object. Will become empty.

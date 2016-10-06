@@ -1643,8 +1643,11 @@ std::u16string CSTXProtocol::GetNextUnicodeString()
 void CSTXProtocol::SkipNextField()
 {
 	unsigned char nTypeSkipped = 0;
-	if(!SkipTypeIndicator(&nTypeSkipped))
+	if (!SkipTypeIndicator(&nTypeSkipped))
+	{
+		throw std::runtime_error("GetNextUnicodeString() : No more data available.");
 		return;
+	}
 
 	if(nTypeSkipped & STXPROTOCOL_DATA_TYPE_FLAG_LENGTH_PREFIX)
 	{
